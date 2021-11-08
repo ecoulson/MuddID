@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import cors from "cors";
 import { ApolloServer } from "apollo-server-express";
 import express from "express";
 import { buildSchema } from "type-graphql";
@@ -19,6 +20,7 @@ async function main(): Promise<void> {
 	await apolloServer.start();
 
 	const app = express();
+	app.use(cors());
 	app.use(graphqlUploadExpress());
 	apolloServer.applyMiddleware({ app });
 	app.listen(4000, () => {

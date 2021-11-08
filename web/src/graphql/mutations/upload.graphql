@@ -1,0 +1,7 @@
+mutation UploadId($file: Upload!) {
+	uploadId(file: $file) {
+		filename
+		mimetype
+		encoding
+	}
+}
