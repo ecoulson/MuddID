@@ -12,20 +12,25 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** The javascript `Date` as string. Type represents date and time as the ISO Date string. */
+  DateTime: any;
   /** The `Upload` scalar type represents a file upload. */
   Upload: any;
 };
 
-export type FileResult = {
-  __typename?: 'FileResult';
-  encoding: Scalars['String'];
-  filename: Scalars['String'];
-  mimetype: Scalars['String'];
+export type DigitalId = {
+  __typename?: 'DigitalId';
+  dateOfBirth: Scalars['DateTime'];
+  id: Scalars['String'];
+  logoPhotoUrl: Scalars['String'];
+  logoText: Scalars['String'];
+  name: Scalars['String'];
+  type: Scalars['String'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  uploadId: FileResult;
+  uploadId: DigitalId;
 };
 
 
@@ -43,15 +48,18 @@ export type UploadIdMutationVariables = Exact<{
 }>;
 
 
-export type UploadIdMutation = { __typename?: 'Mutation', uploadId: { __typename?: 'FileResult', filename: string, mimetype: string, encoding: string } };
+export type UploadIdMutation = { __typename?: 'Mutation', uploadId: { __typename?: 'DigitalId', id: string, logoText: string, logoPhotoUrl: string, name: string, type: string, dateOfBirth: any } };
 
 
 export const UploadIdDocument = gql`
     mutation UploadId($file: Upload!) {
   uploadId(file: $file) {
-    filename
-    mimetype
-    encoding
+    id
+    logoText
+    logoPhotoUrl
+    name
+    type
+    dateOfBirth
   }
 }
     `;
