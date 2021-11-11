@@ -1,8 +1,8 @@
 mutation UploadId($file: Upload!) {
 	uploadId(file: $file) {
 		id
-		logoText
 		logoPhotoUrl
+		facePhotoUrl
 		name
 		type
 		dateOfBirth

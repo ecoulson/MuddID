@@ -1,54 +1,61 @@
 import { Arg, Mutation } from "type-graphql";
 import { FileUpload, GraphQLUpload } from "graphql-upload";
-import { createWriteStream } from "fs";
-import { finished } from "stream/promises";
-import { ReadStream } from "fs-capacitor";
-import annotateImage from "../annotate-image";
-import { google } from "@google-cloud/vision/build/protos/protos";
+import { ReadStream } from "fs";
+import annotateImage from "../verification/annotate-image";
 import { DigitalId } from "../entities/DigitalId";
-import { extractFace } from "../service/extract-face";
-
-type GoogleImageAnnotation = google.cloud.vision.v1.IAnnotateImageResponse;
+import { uploadImageStream } from "../verification/upload-image";
+import { getEnvironmentValue, Environment } from "../environment";
+import { extractText } from "../verification/extract-text";
+import { Sharp } from "sharp";
+import {
+	AnnotationBoundingBoxExtractor,
+	AnnotationType,
+} from "../verification/annotation-bounding-box-extractor";
+import { parseDigitalId } from "../verification/digital-id-parser";
 
 export class VerifierResolver {
+	private faceExtractor: AnnotationBoundingBoxExtractor;
+	private logoExtractor: AnnotationBoundingBoxExtractor;
+
+	constructor() {
+		this.faceExtractor = new AnnotationBoundingBoxExtractor(
+			AnnotationType.FACE
+		);
+		this.logoExtractor = new AnnotationBoundingBoxExtractor(
+			AnnotationType.LOGO
+		);
+	}
+
 	@Mutation(() => DigitalId)
 	async uploadId(
 		@Arg("file", () => GraphQLUpload)
-		{ createReadStream, filename: fileName, mimetype, encoding }: FileUpload
+		{ createReadStream, filename }: FileUpload
 	): Promise<DigitalId> {
-		await this.saveUploadedFile(
+		const annotations = await annotateImage(createReadStream());
+		const faceStream = this.faceExtractor.extract(
 			createReadStream(),
-			fileName,
-			mimetype,
-			encoding
+			annotations
 		);
-		const annotations = await this.getIdAnnotations(fileName);
-		await extractFace(fileName, annotations);
-		return this.parseDigitalIdFromAnnotation(annotations);
+		const logoStream = this.logoExtractor.extract(
+			createReadStream(),
+			annotations
+		);
+		await Promise.all([
+			this.uploadFileToS3(createReadStream(), `uploads/${filename}`),
+			this.uploadFileToS3(faceStream, `face/${filename}`),
+			this.uploadFileToS3(logoStream, `logo/${filename}`),
+		]);
+		const id = parseDigitalId(filename, extractText(annotations));
+		await id.save();
+		return id;
 	}
 
-	private async saveUploadedFile(
-		stream: ReadStream,
-		fileName: string,
-		mimetype: string,
-		encoding: string
-	) {
-		const output = createWriteStream(fileName);
-		stream.pipe(output);
-		await finished(output);
-
-		return { filename: fileName, mimetype, encoding };
-	}
-
-	private async getIdAnnotations(fileName: string) {
-		const annotatedId = await annotateImage(fileName);
-		return annotatedId;
-	}
-
-	private async parseDigitalIdFromAnnotation(
-		annotations: GoogleImageAnnotation
-	) {
-		console.log(annotations);
-		return new DigitalId("", "", "", "", "STUDENT", new Date());
+	private uploadFileToS3(stream: ReadStream | Sharp, key: string) {
+		const bucketName = getEnvironmentValue(
+			Environment.VERIFICATION_IMAGES_BUCKET
+		);
+		const { passThrough, upload } = uploadImageStream(bucketName, key);
+		stream.pipe(passThrough);
+		return upload.done();
 	}
 }

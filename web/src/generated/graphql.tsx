@@ -21,9 +21,9 @@ export type Scalars = {
 export type DigitalId = {
   __typename?: 'DigitalId';
   dateOfBirth: Scalars['DateTime'];
+  facePhotoUrl: Scalars['String'];
   id: Scalars['String'];
   logoPhotoUrl: Scalars['String'];
-  logoText: Scalars['String'];
   name: Scalars['String'];
   type: Scalars['String'];
 };
@@ -48,15 +48,15 @@ export type UploadIdMutationVariables = Exact<{
 }>;
 
 
-export type UploadIdMutation = { __typename?: 'Mutation', uploadId: { __typename?: 'DigitalId', id: string, logoText: string, logoPhotoUrl: string, name: string, type: string, dateOfBirth: any } };
+export type UploadIdMutation = { __typename?: 'Mutation', uploadId: { __typename?: 'DigitalId', id: string, logoPhotoUrl: string, facePhotoUrl: string, name: string, type: string, dateOfBirth: any } };
 
 
 export const UploadIdDocument = gql`
     mutation UploadId($file: Upload!) {
   uploadId(file: $file) {
     id
-    logoText
     logoPhotoUrl
+    facePhotoUrl
     name
     type
     dateOfBirth
