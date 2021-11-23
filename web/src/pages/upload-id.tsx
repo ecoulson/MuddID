@@ -3,7 +3,7 @@ import React, { useCallback, useState } from "react";
 import { useUploadIdMutation } from "../generated/graphql";
 import { Box } from "@chakra-ui/layout";
 import { Layout } from "../components/Layout";
-import { Button, Flex } from "@chakra-ui/react";
+import { Button, Flex, Heading } from "@chakra-ui/react";
 import { ImagePreview } from "../components/ImagePreview";
 import { useRouter } from "next/router";
 
@@ -22,7 +22,6 @@ const UploadId: React.FC<UploadIdProps> = ({}) => {
 		const result = await uploadId({
 			file,
 		});
-		console.log(result);
 		router.push(`/verify-id/${result.data.uploadId.id}`);
 	};
 
@@ -33,6 +32,9 @@ const UploadId: React.FC<UploadIdProps> = ({}) => {
 
 	return (
 		<Layout>
+			<Heading textAlign="center" my="25px">
+				Take Your Mudd ID Digital
+			</Heading>
 			<Flex
 				mt="25px"
 				flexDir="column"

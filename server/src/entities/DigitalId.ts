@@ -17,11 +17,7 @@ export class DigitalId extends BaseEntity {
 
 	@Field()
 	@Column()
-	public logoPhotoUrl: string;
-
-	@Field()
-	@Column()
-	public facePhotoUrl: string;
+	public uploadFilename: string;
 
 	@Field()
 	@Column()
@@ -45,16 +41,14 @@ export class DigitalId extends BaseEntity {
 
 	constructor(
 		id: string,
-		logoPhotoUrl: string,
-		facePhotoUrl: string,
+		uploadFileName: string,
 		name: string,
 		type: "STUDENT",
 		dateOfBirth: Date
 	) {
 		super();
 		this.id = id;
-		this.logoPhotoUrl = logoPhotoUrl;
-		this.facePhotoUrl = facePhotoUrl;
+		this.uploadFilename = uploadFileName;
 		this.name = name;
 		this.type = type;
 		this.dateOfBirth = dateOfBirth;

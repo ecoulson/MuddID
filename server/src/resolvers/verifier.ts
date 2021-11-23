@@ -12,6 +12,8 @@ import {
 	AnnotationType,
 } from "../verification/annotation-bounding-box-extractor";
 import { parseDigitalId } from "../verification/digital-id-parser";
+import { v4 as generateUUID } from "uuid";
+import { extname } from "path";
 
 export class VerifierResolver {
 	private faceExtractor: AnnotationBoundingBoxExtractor;
@@ -31,6 +33,7 @@ export class VerifierResolver {
 		@Arg("file", () => GraphQLUpload)
 		{ createReadStream, filename }: FileUpload
 	): Promise<DigitalId> {
+		const uploadFilename = generateUUID() + extname(filename);
 		const annotations = await annotateImage(createReadStream());
 		const faceStream = this.faceExtractor.extract(
 			createReadStream(),
@@ -40,13 +43,16 @@ export class VerifierResolver {
 			createReadStream(),
 			annotations
 		);
+		const id = parseDigitalId(uploadFilename, extractText(annotations));
 		await Promise.all([
-			this.uploadFileToS3(createReadStream(), `uploads/${filename}`),
-			this.uploadFileToS3(faceStream, `face/${filename}`),
-			this.uploadFileToS3(logoStream, `logo/${filename}`),
+			this.uploadFileToS3(
+				createReadStream(),
+				`uploads/${uploadFilename}`
+			),
+			this.uploadFileToS3(faceStream, `face/${uploadFilename}`),
+			this.uploadFileToS3(logoStream, `logo/${uploadFilename}`),
+			id.save(),
 		]);
-		const id = parseDigitalId(filename, extractText(annotations));
-		await id.save();
 		return id;
 	}
 

@@ -1,0 +1,11 @@
+query Id($id: String!) {
+	id(id: $id) {
+		id
+		name
+		uploadFilename
+		type
+		dateOfBirth
+		createdAt
+		updatedAt
+	}
+}

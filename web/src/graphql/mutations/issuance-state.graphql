@@ -1,0 +1,6 @@
+mutation IssuanceState {
+	state {
+		status
+		message
+	}
+}
