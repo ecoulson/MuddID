@@ -5,5 +5,5 @@
 	path = WalletApp/Submodules/PromiseKit
 	url = https://github.com/mxcl/PromiseKit
 [submodule "WalletApp/Submodules/Secp256k1/bitcoin-core"]
-	path = WalletApp/Submodules/Secp256k1/bitcoin-core
+	path = WalletApp/Submodules/Secp256k1/bitcoin-core/secp256k1
 	url = https://github.com/bitcoin-core/secp256k1
