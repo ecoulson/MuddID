@@ -5,12 +5,13 @@ const ID_PATTERN = /[0-9]{9}(?:-[0-9]+)|[0-9]{9}(?!-)/gm;
 const DATE_OF_BIRTH_PATTERN = /[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}/gm;
 
 export function parseDigitalId(fileName: string, text: string) {
+	const dateOfBirth = parseRegex(DATE_OF_BIRTH_PATTERN, text);
 	return new DigitalId(
 		parseRegex(ID_PATTERN, text),
 		fileName,
 		parseRegex(NAME_PATTERN, text),
 		"STUDENT",
-		new Date(parseRegex(DATE_OF_BIRTH_PATTERN, text))
+		dateOfBirth ? new Date(dateOfBirth) : new Date()
 	);
 }
 
