@@ -1,9 +1,9 @@
-[submodule "WalletApp/WalletApp/Submodules/Foundation"]
-	path = WalletApp/WalletApp/Submodules/Foundation
+[submodule "WalletApp/Submodules/Foundation"]
+	path = WalletApp/Submodules/Foundation
 	url = https://github.com/PromiseKit/Foundation
-[submodule "WalletApp/WalletApp/Submodules/PromiseKit"]
-	path = WalletApp/WalletApp/Submodules/PromiseKit
+[submodule "WalletApp/Submodules/PromiseKit"]
+	path = WalletApp/Submodules/PromiseKit
 	url = https://github.com/mxcl/PromiseKit
-[submodule "WalletApp/WalletApp/Submodules/Secp256k1/bitcoin-core"]
-	path = WalletApp/WalletApp/Submodules/Secp256k1/bitcoin-core
+[submodule "WalletApp/Submodules/Secp256k1/bitcoin-core"]
+	path = WalletApp/Submodules/Secp256k1/bitcoin-core
 	url = https://github.com/bitcoin-core/secp256k1
