@@ -8,6 +8,7 @@ import VCEntities
 
 public protocol IssuanceNetworking {
     func getRequest(withUrl url: String) -> Promise<SignedContract>
+    func getPresentationRequest(withUrl url: String) -> Promise<PresentationRequestToken>
     func sendResponse(usingUrl url: String, withBody body: IssuanceResponse) -> Promise<VerifiableCredential>
     func sendCompletionResponse(usingUrl url: String, withBody nody: IssuanceCompletionResponse) -> Promise<String?>
 }
@@ -21,6 +22,17 @@ public class IssuanceNetworkCalls: IssuanceNetworking {
                 urlSession: URLSession = URLSession.shared) {
         self.correlationVector = correlationVector
         self.urlSession = urlSession
+    }
+    
+    public func getPresentationRequest(withUrl url: String) -> Promise<PresentationRequestToken> {
+        do {
+            var operation = try FetchPresentationRequestOperation(withUrl: url, andCorrelationVector: correlationVector, session: urlSession)
+            return operation.fire()
+        } catch {
+            return Promise { seal in
+                seal.reject(error)
+            }
+        }
     }
     
     public func getRequest(withUrl url: String) -> Promise<SignedContract> {

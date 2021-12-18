@@ -5,36 +5,40 @@
 //  Created by Evan Coulson on 11/23/21.
 //
 import VCServices
+import VCEntities
 import SwiftUI
 
 struct ContentView: View {
-    @State private var requestId: String
-    private var result: Bool
+    @State private var navigateToScanner = false
     
-    init() {
-        requestId = ""
+    func handleIssuance() {
+        navigateToScanner = true
         do {
-            self.result = try VerifiableCredentialSDK.initialize()
+            let result = try VerifiableCredentialSDK.initialize(logConsumer: DefaultVCLogConsumer(), userAgentInfo: "Wallet App")
+            print(result)
         } catch {
-            self.result = true
+            fatalError("Failed to initialize sdk")
         }
     }
     
-    func handleIssuance() {
-        let sample = IssuanceSample()
-        sample.issuanceSample()
-    }
-    
     var body: some View {
-        VStack {
-            Text("Hello, world!")
+        NavigationView {
+            VStack {
+                NavigationLink("View Credentials", destination: IDListView())
+                .navigationBarHidden(true)
+                .navigationTitle("")
+                .navigationBarBackButtonHidden(true)
                 .padding()
-            Text(!result ? "Initialized" : "Failed")
+                NavigationLink(destination: ScannerView(), isActive: $navigateToScanner) {
+                    Button(action: handleIssuance) {
+                        Text("Scan Credential")
+                    }
+                }
+                .navigationBarHidden(true)
+                .navigationTitle("")
+                .navigationBarBackButtonHidden(true)
                 .padding()
-            TextField("Request Id", text: $requestId)
-            Button(action: handleIssuance) {
-                Text("Issue").padding()
-            }.padding()
+            }
         }
     }
 }

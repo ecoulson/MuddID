@@ -17,6 +17,17 @@
 		A667D6E1274D6EE5004F2AC2 /* VCServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A667D6E0274D6EE5004F2AC2 /* VCServices.framework */; };
 		A667D6E2274D6EE5004F2AC2 /* VCServices.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A667D6E0274D6EE5004F2AC2 /* VCServices.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A667D6E5274D6FAB004F2AC2 /* Issuance.swift in Sources */ = {isa = PBXBuildFile; fileRef = A667D6E4274D6FAB004F2AC2 /* Issuance.swift */; };
+		A669E1CC276971E50091EC32 /* VerifiableCredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A669E1CB276971E50091EC32 /* VerifiableCredentialStore.swift */; };
+		A669E1CE27699E4B0091EC32 /* IDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A669E1CD27699E4B0091EC32 /* IDView.swift */; };
+		A669E1D0276A732F0091EC32 /* StorableVerifiableCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = A669E1CF276A732F0091EC32 /* StorableVerifiableCredential.swift */; };
+		A6ABF359276AF62400305412 /* IDListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6ABF358276AF62400305412 /* IDListView.swift */; };
+		A6C7C7C3276022BC0077080B /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6C7C7C2276022BC0077080B /* PromiseKit.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		A6C7C7C4276023100077080B /* PromiseKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A6C7C7C2276022BC0077080B /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A6EE435C275F2905000FEA1E /* ScannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EE435B275F2905000FEA1E /* ScannerViewModel.swift */; };
+		A6EE435E275F2B25000FEA1E /* ScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EE435D275F2B25000FEA1E /* ScannerView.swift */; };
+		A6EE4360275F2CEC000FEA1E /* QRCodeCameraDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EE435F275F2CEC000FEA1E /* QRCodeCameraDelegate.swift */; };
+		A6EE4362275FE798000FEA1E /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EE4361275FE798000FEA1E /* CameraPreview.swift */; };
+		A6EE4364275FEA24000FEA1E /* QRCodeScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EE4363275FEA24000FEA1E /* QRCodeScannerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +54,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				A6C7C7C4276023100077080B /* PromiseKit.framework in Embed Frameworks */,
 				A667D6E2274D6EE5004F2AC2 /* VCServices.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -64,6 +76,16 @@
 		A667D6DE274D6ED7004F2AC2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A667D6E0274D6EE5004F2AC2 /* VCServices.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = VCServices.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A667D6E4274D6FAB004F2AC2 /* Issuance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Issuance.swift; sourceTree = "<group>"; };
+		A669E1CB276971E50091EC32 /* VerifiableCredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiableCredentialStore.swift; sourceTree = "<group>"; };
+		A669E1CD27699E4B0091EC32 /* IDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDView.swift; sourceTree = "<group>"; };
+		A669E1CF276A732F0091EC32 /* StorableVerifiableCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorableVerifiableCredential.swift; sourceTree = "<group>"; };
+		A6ABF358276AF62400305412 /* IDListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDListView.swift; sourceTree = "<group>"; };
+		A6C7C7C2276022BC0077080B /* PromiseKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = PromiseKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A6EE435B275F2905000FEA1E /* ScannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerViewModel.swift; sourceTree = "<group>"; };
+		A6EE435D275F2B25000FEA1E /* ScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerView.swift; sourceTree = "<group>"; };
+		A6EE435F275F2CEC000FEA1E /* QRCodeCameraDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeCameraDelegate.swift; sourceTree = "<group>"; };
+		A6EE4361275FE798000FEA1E /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
+		A6EE4363275FEA24000FEA1E /* QRCodeScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScannerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +93,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A6C7C7C3276022BC0077080B /* PromiseKit.framework in Frameworks */,
 				A667D6E1274D6EE5004F2AC2 /* VCServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -122,6 +145,15 @@
 				A667D6B8274D6E88004F2AC2 /* Assets.xcassets */,
 				A667D6BA274D6E88004F2AC2 /* Preview Content */,
 				A667D6E4274D6FAB004F2AC2 /* Issuance.swift */,
+				A6EE435B275F2905000FEA1E /* ScannerViewModel.swift */,
+				A6EE435D275F2B25000FEA1E /* ScannerView.swift */,
+				A6EE435F275F2CEC000FEA1E /* QRCodeCameraDelegate.swift */,
+				A6EE4361275FE798000FEA1E /* CameraPreview.swift */,
+				A6EE4363275FEA24000FEA1E /* QRCodeScannerView.swift */,
+				A669E1CB276971E50091EC32 /* VerifiableCredentialStore.swift */,
+				A669E1CD27699E4B0091EC32 /* IDView.swift */,
+				A669E1CF276A732F0091EC32 /* StorableVerifiableCredential.swift */,
+				A6ABF358276AF62400305412 /* IDListView.swift */,
 			);
 			path = SampleApp;
 			sourceTree = "<group>";
@@ -154,6 +186,7 @@
 		A667D6DF274D6EE5004F2AC2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A6C7C7C2276022BC0077080B /* PromiseKit.framework */,
 				A667D6E0274D6EE5004F2AC2 /* VCServices.framework */,
 			);
 			name = Frameworks;
@@ -293,6 +326,15 @@
 				A667D6E5274D6FAB004F2AC2 /* Issuance.swift in Sources */,
 				A667D6B7274D6E87004F2AC2 /* ContentView.swift in Sources */,
 				A667D6B5274D6E87004F2AC2 /* SampleApp.swift in Sources */,
+				A6EE4362275FE798000FEA1E /* CameraPreview.swift in Sources */,
+				A6EE4360275F2CEC000FEA1E /* QRCodeCameraDelegate.swift in Sources */,
+				A669E1CE27699E4B0091EC32 /* IDView.swift in Sources */,
+				A669E1CC276971E50091EC32 /* VerifiableCredentialStore.swift in Sources */,
+				A669E1D0276A732F0091EC32 /* StorableVerifiableCredential.swift in Sources */,
+				A6EE4364275FEA24000FEA1E /* QRCodeScannerView.swift in Sources */,
+				A6EE435C275F2905000FEA1E /* ScannerViewModel.swift in Sources */,
+				A6EE435E275F2B25000FEA1E /* ScannerView.swift in Sources */,
+				A6ABF359276AF62400305412 /* IDListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

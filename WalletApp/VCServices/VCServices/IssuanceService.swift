@@ -49,6 +49,14 @@ public class IssuanceService {
         self.sdkLog = sdkLog
     }
     
+    public func getPresentationRequest(usingUrl url: String) -> Promise<PresentationRequestToken> {
+        return logTime(name: "Presentation getRequest") {
+            firstly {
+                self.apiCalls.getPresentationRequest(withUrl: url)
+            }
+        }
+    }
+    
     public func getRequest(usingUrl url: String) -> Promise<IssuanceRequest> {
         return logTime(name: "Issuance getRequest") {
             firstly {

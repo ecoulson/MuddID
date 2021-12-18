@@ -40,6 +40,10 @@ type IssuanceBody = {
 		claims: {
 			family_name: string;
 			given_name: string;
+			id: string;
+			student_photo: string;
+			date_of_birth: string;
+			type: string;
 		};
 	};
 };
@@ -124,6 +128,10 @@ export class IssuerResolver {
 			given_name: nameParts[0],
 			family_name:
 				nameParts.length === 1 ? "" : nameParts[nameParts.length - 1],
+			id: studentId.id,
+			date_of_birth: studentId.dateOfBirth.toUTCString(),
+			student_photo: studentId.uploadFilename,
+			type: studentId.type,
 		};
 	}
 
@@ -141,7 +149,7 @@ export class IssuerResolver {
 				state: id,
 			},
 			issuance: {
-				type: "VerifiedCredentialExpert",
+				type: "HMCId",
 				manifest: getEnvironmentValue(Environment.CREDENTIAL_MANIFEST),
 				pin: {
 					value: "1234",
@@ -150,6 +158,10 @@ export class IssuerResolver {
 				claims: {
 					family_name: "",
 					given_name: "",
+					date_of_birth: "",
+					id: "",
+					type: "",
+					student_photo: "",
 				},
 			},
 		};

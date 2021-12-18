@@ -2,14 +2,20 @@ import VCServices
 import VCEntities
 import PromiseKit
 
-class IssuanceSample {
+class Issuance {
+    private var presentationRequest: PresentationRequestToken?
     
-    func issuanceSample() {
+    func issuanceSample(presentationUrl: String) {
         /// set up issuance service through dependency injection if you like.
         let issuanceService = IssuanceService()
         
-        issuanceService.getRequest(usingUrl: "https://beta.did.msidentity.com/v1.0/bdb30691-2d97-4c55-9d16-76ee0ae951c2/verifiableCredential/contracts/VerifiedCredentialExpert").done { issuanceRequest in
-            self.handle(successfulRequest: issuanceRequest, with: issuanceService)
+        issuanceService.getPresentationRequest(usingUrl: presentationUrl).done { presentationRequest in
+            self.presentationRequest = presentationRequest
+            issuanceService.getRequest(usingUrl: "https://beta.did.msidentity.com/v1.0/bdb30691-2d97-4c55-9d16-76ee0ae951c2/verifiableCredential/contracts/HarveyMuddId").done { issuanceRequest in
+                self.handle(successfulRequest: issuanceRequest, with: issuanceService)
+            }.catch { error in
+                self.handle(failedRequest: error)
+            }
         }.catch { error in
             self.handle(failedRequest: error)
         }
@@ -20,7 +26,7 @@ class IssuanceSample {
         var response: IssuanceResponseContainer
         
         do {
-            response = try IssuanceResponseContainer(from: request.content, contractUri: "https://beta.did.msidentity.com/v1.0/bdb30691-2d97-4c55-9d16-76ee0ae951c2/verifiableCredential/contracts/VerifiedCredentialExpert")
+            response = try IssuanceResponseContainer(from: request.content, contractUri: "https://beta.did.msidentity.com/v1.0/bdb30691-2d97-4c55-9d16-76ee0ae951c2/verifiableCredential/contracts/HarveyMuddId")
         } catch {
             VCSDKLog.sharedInstance.logError(message: "Unable to create IssuanceResponseContainer.")
             return
@@ -35,16 +41,21 @@ class IssuanceSample {
     
     private func addRequestedData(unfilledResponse: IssuanceResponseContainer) -> IssuanceResponseContainer {
         var response: IssuanceResponseContainer = unfilledResponse
-//        response.requestedSelfAttestedClaimMap["key string found in contract"] = "user specified values"
-        response.requestedIdTokenMap["https://self-issued.me"] = "eyJhbGciOiJFUzI1NksiLCJraWQiOiJkaWQ6aW9uOkVpQkEyMTdzS0ZVSVllQkl1aXkwTE1QOWxLX2pQWFMxcnM4anhzREZEcFVZVEE6ZXlKa1pXeDBZU0k2ZXlKd1lYUmphR1Z6SWpwYmV5SmhZM1JwYjI0aU9pSnlaWEJzWVdObElpd2laRzlqZFcxbGJuUWlPbnNpY0hWaWJHbGpTMlY1Y3lJNlczc2lhV1FpT2lKemFXZGZORFl5TjJFMVkyUWlMQ0p3ZFdKc2FXTkxaWGxLZDJzaU9uc2lZM0oySWpvaWMyVmpjREkxTm1zeElpd2lhM1I1SWpvaVJVTWlMQ0o0SWpvaVZYaFFSSHBIVVdvemVuWjFWSEV5WmpGaFgzZDJha2RsVFRWcFJqTkVSMk5HYzNjMVNGa3pRVFJyVFNJc0lua2lPaUpLT0RKSmFVaG1jMmcyYUd0dFNFWkNZM0V5TlY5RlJXbHpaWEJKVjBWbGNIRldRbUpCVkY5WGJ6bG5JbjBzSW5CMWNuQnZjMlZ6SWpwYkltRjFkR2hsYm5ScFkyRjBhVzl1SWl3aVlYTnpaWEowYVc5dVRXVjBhRzlrSWwwc0luUjVjR1VpT2lKRlkyUnpZVk5sWTNBeU5UWnJNVlpsY21sbWFXTmhkR2x2Ymt0bGVUSXdNVGtpZlYwc0luTmxjblpwWTJWeklqcGJleUpwWkNJNklteHBibXRsWkdSdmJXRnBibk1pTENKelpYSjJhV05sUlc1a2NHOXBiblFpT25zaWIzSnBaMmx1Y3lJNld5Sm9kSFJ3Y3pvdkwyTnZiblJ2YzI4dVkyOXRMeUpkZlN3aWRIbHdaU0k2SWt4cGJtdGxaRVJ2YldGcGJuTWlmVjE5ZlYwc0luVndaR0YwWlVOdmJXMXBkRzFsYm5RaU9pSkZhVUZGTUdoVVVVMHRXbWhKTlY4MmVYVmxabVpRTUVSUlJGcDRPVGhwV1V0aU1ERnVSRWRZYVc1aE4zWjNJbjBzSW5OMVptWnBlRVJoZEdFaU9uc2laR1ZzZEdGSVlYTm9Jam9pUldsRE1EQkZSbFZyTlVOclFWZFBOek5VVTNsSGJrbzRTVVJtWmxwSlYybHRjREppWTNwaVlpMVlSelp3WnlJc0luSmxZMjkyWlhKNVEyOXRiV2wwYldWdWRDSTZJa1ZwUW1WTVRuUk9iVmRZVW1ScGNuSkJZalZUYldnMWVFOWxMVFJIYWxCNFJtdG1ja2hhTUhKR1dtdDRhRUVpZlgwI3NpZ180NjI3YTVjZCIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2JldGEuZGlkLm1zaWRlbnRpdHkuY29tL3YxLjAvYmRiMzA2OTEtMmQ5Ny00YzU1LTlkMTYtNzZlZTBhZTk1MWMyL3ZlcmlmaWFibGVDcmVkZW50aWFsL2NhcmQvaXNzdWUiLCJkaWQiOiJkaWQ6aW9uOkVpQkEyMTdzS0ZVSVllQkl1aXkwTE1QOWxLX2pQWFMxcnM4anhzREZEcFVZVEE6ZXlKa1pXeDBZU0k2ZXlKd1lYUmphR1Z6SWpwYmV5SmhZM1JwYjI0aU9pSnlaWEJzWVdObElpd2laRzlqZFcxbGJuUWlPbnNpY0hWaWJHbGpTMlY1Y3lJNlczc2lhV1FpT2lKemFXZGZORFl5TjJFMVkyUWlMQ0p3ZFdKc2FXTkxaWGxLZDJzaU9uc2lZM0oySWpvaWMyVmpjREkxTm1zeElpd2lhM1I1SWpvaVJVTWlMQ0o0SWpvaVZYaFFSSHBIVVdvemVuWjFWSEV5WmpGaFgzZDJha2RsVFRWcFJqTkVSMk5HYzNjMVNGa3pRVFJyVFNJc0lua2lPaUpLT0RKSmFVaG1jMmcyYUd0dFNFWkNZM0V5TlY5RlJXbHpaWEJKVjBWbGNIRldRbUpCVkY5WGJ6bG5JbjBzSW5CMWNuQnZjMlZ6SWpwYkltRjFkR2hsYm5ScFkyRjBhVzl1SWl3aVlYTnpaWEowYVc5dVRXVjBhRzlrSWwwc0luUjVjR1VpT2lKRlkyUnpZVk5sWTNBeU5UWnJNVlpsY21sbWFXTmhkR2x2Ymt0bGVUSXdNVGtpZlYwc0luTmxjblpwWTJWeklqcGJleUpwWkNJNklteHBibXRsWkdSdmJXRnBibk1pTENKelpYSjJhV05sUlc1a2NHOXBiblFpT25zaWIzSnBaMmx1Y3lJNld5Sm9kSFJ3Y3pvdkwyTnZiblJ2YzI4dVkyOXRMeUpkZlN3aWRIbHdaU0k2SWt4cGJtdGxaRVJ2YldGcGJuTWlmVjE5ZlYwc0luVndaR0YwWlVOdmJXMXBkRzFsYm5RaU9pSkZhVUZGTUdoVVVVMHRXbWhKTlY4MmVYVmxabVpRTUVSUlJGcDRPVGhwV1V0aU1ERnVSRWRZYVc1aE4zWjNJbjBzSW5OMVptWnBlRVJoZEdFaU9uc2laR1ZzZEdGSVlYTm9Jam9pUldsRE1EQkZSbFZyTlVOclFWZFBOek5VVTNsSGJrbzRTVVJtWmxwSlYybHRjREppWTNwaVlpMVlSelp3WnlJc0luSmxZMjkyWlhKNVEyOXRiV2wwYldWdWRDSTZJa1ZwUW1WTVRuUk9iVmRZVW1ScGNuSkJZalZUYldnMWVFOWxMVFJIYWxCNFJtdG1ja2hhTUhKR1dtdDRhRUVpZlgwIiwibm9uY2UiOiJ5MVBROE4ySjljK3lIOVlpb3pzWnJRPT0iLCJzdWIiOiJkcW9QZjBOUTZzVEJpOHNlZ1dMeHJKQTc2VFpIbFBZbjlqN28yMEw1YlY0Iiwic3ViX2p3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJraWQiOiJkaWQ6aW9uOkVpQkEyMTdzS0ZVSVllQkl1aXkwTE1QOWxLX2pQWFMxcnM4anhzREZEcFVZVEE6ZXlKa1pXeDBZU0k2ZXlKd1lYUmphR1Z6SWpwYmV5SmhZM1JwYjI0aU9pSnlaWEJzWVdObElpd2laRzlqZFcxbGJuUWlPbnNpY0hWaWJHbGpTMlY1Y3lJNlczc2lhV1FpT2lKemFXZGZORFl5TjJFMVkyUWlMQ0p3ZFdKc2FXTkxaWGxLZDJzaU9uc2lZM0oySWpvaWMyVmpjREkxTm1zeElpd2lhM1I1SWpvaVJVTWlMQ0o0SWpvaVZYaFFSSHBIVVdvemVuWjFWSEV5WmpGaFgzZDJha2RsVFRWcFJqTkVSMk5HYzNjMVNGa3pRVFJyVFNJc0lua2lPaUpLT0RKSmFVaG1jMmcyYUd0dFNFWkNZM0V5TlY5RlJXbHpaWEJKVjBWbGNIRldRbUpCVkY5WGJ6bG5JbjBzSW5CMWNuQnZjMlZ6SWpwYkltRjFkR2hsYm5ScFkyRjBhVzl1SWl3aVlYTnpaWEowYVc5dVRXVjBhRzlrSWwwc0luUjVjR1VpT2lKRlkyUnpZVk5sWTNBeU5UWnJNVlpsY21sbWFXTmhkR2x2Ymt0bGVUSXdNVGtpZlYwc0luTmxjblpwWTJWeklqcGJleUpwWkNJNklteHBibXRsWkdSdmJXRnBibk1pTENKelpYSjJhV05sUlc1a2NHOXBiblFpT25zaWIzSnBaMmx1Y3lJNld5Sm9kSFJ3Y3pvdkwyTnZiblJ2YzI4dVkyOXRMeUpkZlN3aWRIbHdaU0k2SWt4cGJtdGxaRVJ2YldGcGJuTWlmVjE5ZlYwc0luVndaR0YwWlVOdmJXMXBkRzFsYm5RaU9pSkZhVUZGTUdoVVVVMHRXbWhKTlY4MmVYVmxabVpRTUVSUlJGcDRPVGhwV1V0aU1ERnVSRWRZYVc1aE4zWjNJbjBzSW5OMVptWnBlRVJoZEdFaU9uc2laR1ZzZEdGSVlYTm9Jam9pUldsRE1EQkZSbFZyTlVOclFWZFBOek5VVTNsSGJrbzRTVVJtWmxwSlYybHRjREppWTNwaVlpMVlSelp3WnlJc0luSmxZMjkyWlhKNVEyOXRiV2wwYldWdWRDSTZJa1ZwUW1WTVRuUk9iVmRZVW1ScGNuSkJZalZUYldnMWVFOWxMVFJIYWxCNFJtdG1ja2hhTUhKR1dtdDRhRUVpZlgwI3NpZ180NjI3YTVjZCIsImt0eSI6IkVDIiwieCI6IlV4UER6R1FqM3p2dVRxMmYxYV93dmpHZU01aUYzREdjRnN3NUhZM0E0a00iLCJ5IjoiSjgySWlIZnNoNmhrbUhGQmNxMjVfRUVpc2VwSVdFZXBxVkJiQVRfV285ZyJ9LCJnaXZlbl9uYW1lIjoiRXZhbiIsImZhbWlseV9uYW1lIjoiQ291bHNvbiIsImlzcyI6Imh0dHBzOi8vc2VsZi1pc3N1ZWQubWUiLCJpYXQiOjE2MzgyMjE1OTUsImp0aSI6IjYwNzFkNmRiLTUyMzItNDg5Yi1iYjg3LTc5ZGZmOTE5Mzc0ZSIsImV4cCI6MTYzODIyMTg5NSwicGluIjp7Imxlbmd0aCI6NCwidHlwZSI6Im51bWVyaWMiLCJoYXNoIjoiTXJ0UnRuYmpNUVdSWFBKQXJGSkw5STJHWXllVUVuK3dGczc4Wmg1TVVkVT0ifX0.9FoNX9vmEx9nDe_aepawPKmdPY64DEs1k5AHKvJU0coO_9eOux3VswUUl3eKUA63EqOut3e79FvsbbpV27nYmg"
-//        response.requestVCMap["credential type"] = "ur muym"
+        response.requestedIdTokenMap["https://self-issued.me"] = self.presentationRequest?.content.idTokenHint?.raw
         return response
     }
     
     private func handle(successfulResponse response: VerifiableCredential, with issuanceService: IssuanceService) {
-        /// use verifiable credential
-        print(response)
-        issuanceService.sendCompletionResponse(for: IssuanceCompletionResponse(wasSuccessful: true, withState: "djGBJyrwH2ioFxHW/TMh7wBlqIgm9KAnQRB/yGf6WPQousk1i65UiY+wN/DZOxzO8pVCfcpyV1mLfNsEpeofkBDiPKZyWHJbJdOMo7gcGYwdHNi05HTYN8NNUBdtkPIKTTO7Hzo++7NLXJOlN3QOq99JVudYMIoADN7z500oZdoiSOW0uTkMT2TGMbLddIZLrB2qvvrhORIPaDIkTOeZ9Qq/nZxsSfqPReJll3F/agG9nOmbgU4DvEFuc9Qnoxzw7ywD5kw1PX/gT7THuQsv1rfeiOykE1ewvennB8yuJOG70JBrik9Zleyvp4HYRJhXXNf0LJjGsufKGJkT4EHIPH0EH9OBigV8gg7GafXCs9DNzJwrXiCerN1QXOjQksvAOpH3fzfWQqvn7dnol3Hc6OBFlzzDQcGQnl4JWJFgZ+wp3/483RdZxCPnccQVb7Rxx88B6qmr3PUWc+NDSZnwFYcwqsVp8WZUrt1LBqwS30PaFdAWg6M5MEXd6mRJ5ckhpLKVhDr0UfJNP+Q6XRsbASC2hHET2/cWdVLD0Mk6VloZquFmAEZXrNHXDZnXQ9LWKRjQLp/cSkHGJwvgyMvdzdZNYpTq0J2EgQzFEGsM3Jd6bS79FDxVM+U5am19wGt3F53EdTKih8Dw1ZcSBE1DZfBepj7MLTQD19adSEAvAWauSCPH8Gqu+QC3hysG/3/lCkBObHz14U4mqCogXdPq6HBiirvCEfz7aBS2/aer4dLYQm5j8UTkoPhr+3Gy3GyrAHhu9wopYw8FRNj35JMxwXuuY2d2/eAcifegu8O59bjXC6Av+9ivUPaxj5BeyYFWnn9oOYHbH/WEi4OuHs3++ibqCDMYJnET9uIzWKmEzVDfdJnMWzs93lscA072C0gGoye/nR+V075SU+RxNPFUOv/x2IT0Y9eJ6Xy7i2e6DqsNtzRF9gVwuisvaW9OX1792I0facHia11d/q6DiWnK1LvUjVqP9zaP8qCH+S9PNvUwlL+EtVNHTjRxMlggcWCgLRqZVF5PVIB/M4BFdZLQDKRFMJparvrT02UeglHDiSKFgmvYf5VWd33vo3auOko6chk5Tdqlimd2gxXqZQGQLD/Bhf0ndqr+qoaRkGHNwobLtZp/VSKY2C46ziPN7KSCoVgHqvk+YL0QBfJA3GPYBUlPz4NTj31757/MJS8q4XTzekZc/r9C1BTHFBBUuLtfhfisPUdM15tunkLx7ejLXp0YL2Bq6zUBaQ5a0GbXfXFi6O6gWNZKfVz65Y/zwZoobwss3SUFj4mwM3oFKhotywnOfWtYccC/QwsrCZ98ytfMiBbkIDqrhjUo/1suWmbWdwGvhR4YB8jCfBOrigGpK+WxpPGku5MINz7bDf+g294FNyrnF95AiUMbhl1q/J71Hn6pr1lBW11PHnqC3u7Hh7qqL4u6zJy2yKGHB8ogDSf1eb0KA/Yul64fTDW7k6Gi4HlK0RMAqdK+cQaorZug8mU9BNQOshrgOue3WvZscbR9O0bO/MaM4OZR2cBq7RWTXS30jmkMqVZfjdcpj2QKteBLvy747eFZHGt0T4lJ5hQnjIs7rqx1Cs8J0Bcb7TWRykLgw0xBsZnoIOxmSo0BD4s+XztyKC+t"), to: "https://beta.did.msidentity.com/v1.0/bdb30691-2d97-4c55-9d16-76ee0ae951c2/verifiablecredentials/issuance")
+        issuanceService.sendCompletionResponse(for: IssuanceCompletionResponse(wasSuccessful: true, withState: (self.presentationRequest?.content.state)!), to: "https://beta.did.msidentity.com/v1.0/bdb30691-2d97-4c55-9d16-76ee0ae951c2/verifiablecredentials/issuance").done { completionResponse in
+            print(response.content.vc.credentialSubject)
+            VerifiableCredentialStore.save(verifiableCredentials: [StorableVerifiableCredential(verifiableCredentialDescriptor: response.content.vc)]) { result in
+                if case .failure(let error) = result {
+                    fatalError(error.localizedDescription)
+                }
+            }
+        }.catch { error in
+            self.handle(failedResponse: error)
+        }
     }
     
     private func handle(failedRequest error: Error) {
