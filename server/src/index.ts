@@ -6,7 +6,6 @@ import session from "express-session";
 import { ApolloServer } from "apollo-server-express";
 import express from "express";
 import { buildSchema } from "type-graphql";
-import { HelloResolver } from "./resolvers/hello";
 import { graphqlUploadExpress } from "graphql-upload";
 import { VerifierResolver } from "./resolvers/verifier";
 import { createConnection } from "typeorm";
@@ -35,7 +34,6 @@ async function main(): Promise<void> {
 	const apolloServer = new ApolloServer({
 		schema: await buildSchema({
 			resolvers: [
-				HelloResolver,
 				VerifierResolver,
 				IdResolver,
 				IssuanceStateResolver,
