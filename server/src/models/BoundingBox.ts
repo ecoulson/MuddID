@@ -1,6 +1,6 @@
 import Vertex from "./Vertex";
 
-export default class FaceAnnotation {
+export default class BoundingBox {
 	public readonly boundingPolygon: Vertex[];
 
 	constructor(boundingPolygon: Vertex[]) {

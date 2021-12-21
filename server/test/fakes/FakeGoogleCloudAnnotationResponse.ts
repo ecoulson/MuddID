@@ -1,12 +1,8 @@
-import { google } from "@google-cloud/vision/build/protos/protos";
+import { GoogleCloudAnnotationResponse } from "../../src/brokers/GoogleCloudTypes";
 import AnnotatedImage from "../../src/models/AnnotatedImage";
-import FaceAnnotation from "../../src/models/FaceAnnotation";
-import LogoAnnotation from "../../src/models/LogoAnnotation";
+import BoundingBox from "../../src/models/BoundingBox";
 import TextAnnotation from "../../src/models/TextAnnotation";
 import Vertex from "../../src/models/Vertex";
-
-type GoogleCloudAnnotationResponse =
-	google.cloud.vision.v1.IAnnotateImageResponse;
 
 export function createFakeGoogleCloudAnnotationResponse(): GoogleCloudAnnotationResponse {
 	return {
@@ -44,24 +40,24 @@ export function createFakeGoogleCloudAnnotationResponse(): GoogleCloudAnnotation
 
 export function createExpectedAnnotatedImageFromResponse(
 	file: Buffer,
-	response: GoogleCloudAnnotationResponse
+	response: GoogleCloudAnnotationResponse,
 ): AnnotatedImage {
 	return new AnnotatedImage(
 		file,
 		[
-			new FaceAnnotation(
+			new BoundingBox(
 				response.faceAnnotations![0].boundingPoly!.vertices!.map(
-					({ x, y }) => new Vertex(x!, y!)
-				)
+					({ x, y }) => new Vertex(x!, y!),
+				),
 			),
 		],
 		[
-			new LogoAnnotation(
+			new BoundingBox(
 				response.logoAnnotations![0].boundingPoly!.vertices!.map(
-					({ x, y }) => new Vertex(x!, y!)
-				)
+					({ x, y }) => new Vertex(x!, y!),
+				),
 			),
 		],
-		[new TextAnnotation(response.textAnnotations![0].description!)]
+		[new TextAnnotation(response.textAnnotations![0].description!)],
 	);
 }

@@ -1,4 +1,4 @@
-import { google } from "@google-cloud/vision/build/protos/protos";
+import { GoogleCloudVertex } from "../brokers/GoogleCloudTypes";
 
 export interface BoundingBox {
 	left: number;
@@ -27,18 +27,18 @@ export class BoundingBoxBuilder {
 		};
 	}
 
-	public addVertex(vertex: google.cloud.vision.v1.IVertex) {
+	public addVertex(vertex: GoogleCloudVertex) {
 		this.boundingBox.top = Math.min(this.boundingBox.top, vertex.y!);
 		this.boundingBox.left = Math.min(this.boundingBox.left, vertex.x!);
 		this.right = Math.max(this.right, vertex.x!);
 		this.bottom = Math.max(this.bottom, vertex.y!);
 		this.boundingBox.width = Math.max(
 			this.boundingBox.width,
-			this.right - this.boundingBox.left
+			this.right - this.boundingBox.left,
 		);
 		this.boundingBox.height = Math.max(
 			this.boundingBox.height,
-			this.bottom - this.boundingBox.top
+			this.bottom - this.boundingBox.top,
 		);
 	}
 

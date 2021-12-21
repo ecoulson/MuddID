@@ -1,9 +1,6 @@
-import { google } from "@google-cloud/vision/build/protos/protos";
+import { GoogleCloudAnnotationResponse } from "./GoogleCloudTypes";
 import IGoogleCloudImageAnnotationBrokerConfiguration from "./IGoogleCloudImageAnnotationBrokerConfiguration.ts";
 import IImageAnnotationBroker from "./IImageAnnotationBroker";
-
-type GoogleCloudAnnotationResponse =
-	google.cloud.vision.v1.IAnnotateImageResponse;
 
 export default class GoogleCloudImageAnnotationBroker
 	implements IImageAnnotationBroker<GoogleCloudAnnotationResponse>
@@ -14,10 +11,8 @@ export default class GoogleCloudImageAnnotationBroker
 		this.configuration = configuration;
 	}
 
-	async annotateImage(
-		file: Buffer
-	): Promise<GoogleCloudAnnotationResponse> {
-		const { client, features } = this.configuration
+	async annotateImage(file: Buffer): Promise<GoogleCloudAnnotationResponse> {
+		const { client, features } = this.configuration;
 		const [result] = await client.annotateImage({
 			features: features,
 			image: {

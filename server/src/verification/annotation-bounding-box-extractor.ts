@@ -1,7 +1,7 @@
 import { ReadStream } from "fs";
 import sharp from "sharp";
+import { GoogleCloudAnnotationResponse } from "../brokers/GoogleCloudTypes";
 import { BoundingBox, BoundingBoxBuilder } from "./bounding-box";
-import { GoogleImageAnnotation } from "./google-image-annotation";
 
 export enum AnnotationType {
 	FACE = "faceAnnotations",
@@ -15,14 +15,14 @@ export class AnnotationBoundingBoxExtractor {
 		this.annotationType = annotationType;
 	}
 
-	public extract(stream: ReadStream, annotations: GoogleImageAnnotation) {
+	public extract(stream: ReadStream, annotations: GoogleCloudAnnotationResponse) {
 		const boundingBoxBuilder = new BoundingBoxBuilder();
 		const verticies = this.getVerticiesFromAnnotation(annotations);
 		verticies.forEach((vertex) => boundingBoxBuilder.addVertex(vertex));
 		return stream.pipe(this.extractBoundingBox(boundingBoxBuilder.build()));
 	}
 
-	private getVerticiesFromAnnotation(annotations: GoogleImageAnnotation) {
+	private getVerticiesFromAnnotation(annotations: GoogleCloudAnnotationResponse) {
 		if (!annotations[this.annotationType]) {
 			throw new Error("Face not found in image");
 		}

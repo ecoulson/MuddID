@@ -1,6 +1,6 @@
-import { GoogleImageAnnotation } from "./google-image-annotation";
+import { GoogleCloudAnnotationResponse } from "../brokers/GoogleCloudTypes";
 
-function extractText(annotations: GoogleImageAnnotation) {
+function extractText(annotations: GoogleCloudAnnotationResponse) {
 	if (!annotations.textAnnotations) {
 		throw new Error("No text annotations found");
 	}
