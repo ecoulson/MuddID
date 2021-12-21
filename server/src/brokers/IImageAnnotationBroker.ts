@@ -1,3 +1,3 @@
 export default interface IImageAnnotationBroker<Response> {
-	annotateImageWithFeatures(file: Buffer): Promise<Response>;
+	annotateImage(file: Buffer): Promise<Response>;
 }
