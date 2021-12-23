@@ -3,7 +3,7 @@ export default class Exception extends Error {
 	public readonly data: Map<string, string[]>;
 
 	constructor(
-		name: string = "Exception",
+		name: string = Exception.name,
 		message: string = "",
 		innerException: Error | undefined = undefined,
 		data: Map<string, string[]> = new Map<string, string[]>(),
@@ -20,6 +20,14 @@ export default class Exception extends Error {
 			this.data.set(key, [value]);
 		} else {
 			this.data.get(key)!.push(value);
+		}
+	}
+
+	public addData(data: Map<string, string[]>) {
+		for (const [parameter, errors] of data) {
+			for (const error of errors) {
+				this.upsertDataList(parameter, error);
+			}
 		}
 	}
 

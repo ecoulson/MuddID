@@ -45,4 +45,26 @@ describe("Exception Suite", () => {
 			expect(error).toEqual(expectedException);
 		}
 	});
+
+	test("When adding data to the exception it should add the data", () => {
+		const data = new Map([["key", ["value"]]]);
+		const exception = new Exception();
+		const expectedException = new Exception(Exception.name, "", undefined, data);
+
+		exception.addData(data);
+
+		expect(exception.data).toEqual(expectedException.data);
+	});
+
+	test("When adding data to the exception it should not overwrite the data", () => {
+		const newData = new Map([["key", ["value"]]]);
+		const existingData = new Map([["key", ["old error"]]]);
+		const expectedData = new Map([["key", ["old error", "value"]]]);
+		const exception = new Exception(Exception.name, "", undefined, existingData);
+		const expectedException = new Exception(Exception.name, "", undefined, expectedData);
+
+		exception.addData(newData);
+
+		expect(exception.data).toEqual(expectedException.data);
+	});
 });
