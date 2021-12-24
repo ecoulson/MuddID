@@ -24,8 +24,8 @@ describe("Google Cloud Annotation Response Validator Suite", () => {
 	test("Should throw an exception when the annotation has no bounding poly", () => {
 		const expectedError = new IllegalGoogleCloudAnnotationResponseException(
 			new Map([
-				["faceAnnotations[0].boundingPoly", ["Must exist on the response body"]],
-				["logoAnnotations[0].boundingPoly", ["Must exist on the response body"]],
+				["faceAnnotations[0].boundingPoly", ["Must exist on the annotation"]],
+				["logoAnnotations[0].boundingPoly", ["Must exist on the annotation"]],
 				["textAnnotations", ["Must exist on the response body"]],
 			]),
 		);
@@ -44,9 +44,9 @@ describe("Google Cloud Annotation Response Validator Suite", () => {
 	test("Should throw an exception when the text annotation has no description", () => {
 		const expectedError = new IllegalGoogleCloudAnnotationResponseException(
 			new Map([
-				["faceAnnotations[0].boundingPoly", ["Must exist on the response body"]],
-				["logoAnnotations[0].boundingPoly", ["Must exist on the response body"]],
-				["textAnnotations[0].description", ["Must exist on the response body"]],
+				["faceAnnotations[0].boundingPoly", ["Must exist on the annotation"]],
+				["logoAnnotations[0].boundingPoly", ["Must exist on the annotation"]],
+				["textAnnotations[0].description", ["Must exist on the text annotation"]],
 			]),
 		);
 
@@ -65,9 +65,15 @@ describe("Google Cloud Annotation Response Validator Suite", () => {
 	test("Should throw an exception when the annotations have no vertices", () => {
 		const expectedError = new IllegalGoogleCloudAnnotationResponseException(
 			new Map([
-				["faceAnnotations[0].boundingPoly.vertices", ["Must exist on the response body"]],
-				["logoAnnotations[0].boundingPoly.vertices", ["Must exist on the response body"]],
-				["textAnnotations[0].description", ["Must exist on the response body"]],
+				[
+					"faceAnnotations[0].boundingPoly.vertices",
+					["Must exist on the bounding polygon"],
+				],
+				[
+					"logoAnnotations[0].boundingPoly.vertices",
+					["Must exist on the bounding polygon"],
+				],
+				["textAnnotations[0].description", ["Must exist on the text annotation"]],
 			]),
 		);
 
@@ -82,6 +88,53 @@ describe("Google Cloud Annotation Response Validator Suite", () => {
 				logoAnnotations: [
 					{
 						boundingPoly: {},
+					},
+				],
+				textAnnotations: [{}],
+			});
+		} catch (error) {
+			expect(error.data).toEqual(expectedError.data);
+		}
+	});
+
+	test("Should throw an exception when there exist illegal vertices", () => {
+		const expectedError = new IllegalGoogleCloudAnnotationResponseException(
+			new Map([
+				[
+					"faceAnnotations[0].boundingPoly.vertices[0]",
+					["Vertex must have an x and a y value"],
+				],
+				[
+					"logoAnnotations[0].boundingPoly.vertices[0]",
+					["Vertex must have an x and a y value"],
+				],
+				["textAnnotations[0].description", ["Must exist on the text annotation"]],
+			]),
+		);
+
+		expect.assertions(1);
+		try {
+			validator.validate({
+				faceAnnotations: [
+					{
+						boundingPoly: {
+							vertices: [
+								{
+									x: 0,
+								},
+							],
+						},
+					},
+				],
+				logoAnnotations: [
+					{
+						boundingPoly: {
+							vertices: [
+								{
+									y: 0,
+								},
+							],
+						},
 					},
 				],
 				textAnnotations: [{}],

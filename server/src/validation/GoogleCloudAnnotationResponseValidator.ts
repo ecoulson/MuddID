@@ -6,39 +6,58 @@ import {
 	GoogleCloudVertex,
 } from "../brokers/GoogleCloudTypes";
 import IllegalGoogleCloudAnnotationResponseException from "../models/Exceptions/IllegalGoogleCloudAnnotationResponseException";
+import { isNil } from "./Conditions";
 import IValidation from "./IValidation";
 import IValidationResult from "./IValidationResult";
+import Validation from "./Validation";
+import ValidationResult from "./ValidationResult";
 import Validator from "./Validator";
 
 export default class GoogleCloudAnnotationResponseValidator extends Validator<GoogleCloudAnnotationResponse> {
+	private readonly faceAnnotationParameter = "faceAnnotations";
+	private readonly logoAnnotationParameter = "logoAnnotations";
+	private readonly textAnnotationParameter = "textAnnotations";
+	private readonly boundingPolygonParameter = "boundingPoly";
+	private readonly verticesParameter = "vertices";
+	private readonly descriptionParameter = "description";
+
+	private readonly annotationExistsMessage = "Must exist on the response body";
+	private readonly boundingBoxExistsMessage = "Must exist on the annotation";
+	private readonly verticesExistsMessage = "Must exist on the bounding polygon";
+	private readonly invalidVertexMessage = "Vertex must have an x and a y value";
+	private readonly descriptionExistsMessage = "Must exist on the text annotation";
+
 	public validate(response: GoogleCloudAnnotationResponse): void {
 		const exception = new IllegalGoogleCloudAnnotationResponseException();
 		this.executeValidation(
 			exception,
-			{
-				parameter: "faceAnnotations",
-				rule: this.isNotNull(response.faceAnnotations),
-			},
-			{
-				parameter: "logoAnnotations",
-				rule: this.isNotNull(response.logoAnnotations),
-			},
-			{
-				parameter: "textAnnotations",
-				rule: this.isNotNull(response.textAnnotations),
-			},
-			...this.validateAnnotation("faceAnnotations", response.faceAnnotations),
-			...this.validateAnnotation("logoAnnotations", response.logoAnnotations),
+			...this.ensureAnnotationsExist(response),
+			...this.validateAnnotation(this.faceAnnotationParameter, response.faceAnnotations),
+			...this.validateAnnotation(this.logoAnnotationParameter, response.logoAnnotations),
 			...this.validateDescriptionExists(response.textAnnotations),
 		);
 		exception.throwIfContainsErrors();
 	}
 
-	private isNotNull(property: any): IValidationResult {
-		return {
-			condition: property === null || property === undefined,
-			message: "Must exist on the response body",
-		};
+	private ensureAnnotationsExist(response: GoogleCloudAnnotationResponse) {
+		return [
+			new Validation(
+				this.faceAnnotationParameter,
+				this.hasProperty(response.faceAnnotations, this.annotationExistsMessage),
+			),
+			new Validation(
+				this.logoAnnotationParameter,
+				this.hasProperty(response.logoAnnotations, this.annotationExistsMessage),
+			),
+			new Validation(
+				this.textAnnotationParameter,
+				this.hasProperty(response.textAnnotations, this.annotationExistsMessage),
+			),
+		];
+	}
+
+	private hasProperty(property: any, message: string): IValidationResult {
+		return new ValidationResult(isNil(property), message);
 	}
 
 	private validateAnnotation(
@@ -52,19 +71,40 @@ export default class GoogleCloudAnnotationResponseValidator extends Validator<Go
 	}
 
 	private validateBoundingBoxes(parameter: string, annotations: GoogleCloudAnnotation[]) {
-		return annotations.reduce<IValidation[]>((validations, annotation, i) => {
-			return [
+		return annotations.reduce<IValidation[]>(
+			(validations, annotation, i) => [
 				...validations,
-				...this.validateVertices(
-					`${parameter}[${i}].boundingPoly.vertices`,
-					annotation.boundingPoly,
-				),
-				{
-					rule: this.isNotNull(annotation.boundingPoly),
-					parameter: `${parameter}[${i}].boundingPoly`,
-				},
-			];
-		}, []);
+				...this.validateBoundingBox(parameter, annotation, i),
+			],
+			[],
+		);
+	}
+
+	private validateBoundingBox(parameter: string, annotation: GoogleCloudAnnotation, i: number) {
+		const boundingPolygonParameter = this.calculateIndexParameter(
+			parameter,
+			i,
+			this.boundingPolygonParameter,
+		);
+		const verticesParameter = this.calculateNestedParameter(
+			boundingPolygonParameter,
+			this.verticesParameter,
+		);
+		return [
+			{
+				rule: this.hasProperty(annotation.boundingPoly, this.boundingBoxExistsMessage),
+				parameter: boundingPolygonParameter,
+			},
+			...this.validateVertices(verticesParameter, annotation.boundingPoly),
+		];
+	}
+
+	private calculateIndexParameter(parameter: string, i: number, suffix: string) {
+		return `${parameter}[${i}].${suffix}`;
+	}
+
+	private calculateNestedParameter(parameter: string, suffix: string) {
+		return `${parameter}.${suffix}`;
 	}
 
 	private validateVertices(
@@ -75,30 +115,22 @@ export default class GoogleCloudAnnotationResponseValidator extends Validator<Go
 			return [];
 		}
 		if (!polygon.vertices) {
-			return [
-				{
-					rule: this.isNotNull(polygon.vertices),
-					parameter: parameter,
-				},
-			];
+			return [this.ensureVerticesExist(parameter, polygon)];
 		}
-		return polygon.vertices.map((vertex, i) => {
-			return {
-				rule: this.isValidVertex(vertex),
-				parameter: `${parameter}[${i}]`,
-			};
-		});
+		return polygon.vertices.map(
+			(vertex, i) => new Validation(`${parameter}[${i}]`, this.isValidVertex(vertex)),
+		);
+	}
+
+	private ensureVerticesExist(parameter: string, polygon: GoogleCloudBoundingPolygon) {
+		return new Validation(
+			parameter,
+			this.hasProperty(polygon.vertices, this.verticesExistsMessage),
+		);
 	}
 
 	private isValidVertex(vertex: GoogleCloudVertex): IValidationResult {
-		return {
-			condition:
-				vertex.x === null ||
-				vertex.x === undefined ||
-				vertex.y === null ||
-				vertex.y === undefined,
-			message: "Vertex must have an x and a y value",
-		};
+		return new ValidationResult(isNil(vertex.x) || isNil(vertex.y), this.invalidVertexMessage);
 	}
 
 	private validateDescriptionExists(
@@ -108,10 +140,15 @@ export default class GoogleCloudAnnotationResponseValidator extends Validator<Go
 			return [];
 		}
 		return annotations.map((annotation, i) => {
-			return {
-				rule: this.isNotNull(annotation.description),
-				parameter: `textAnnotations[${i}].description`,
-			};
+			const parameter = this.calculateIndexParameter(
+				this.textAnnotationParameter,
+				i,
+				this.descriptionParameter,
+			);
+			return new Validation(
+				parameter,
+				this.hasProperty(annotation.description, this.descriptionExistsMessage),
+			);
 		});
 	}
 }
