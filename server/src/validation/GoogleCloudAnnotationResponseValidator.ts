@@ -91,10 +91,10 @@ export default class GoogleCloudAnnotationResponseValidator extends Validator<Go
 			this.verticesParameter,
 		);
 		return [
-			{
-				rule: this.hasProperty(annotation.boundingPoly, this.boundingBoxExistsMessage),
-				parameter: boundingPolygonParameter,
-			},
+			new Validation(
+				boundingPolygonParameter,
+				this.hasProperty(annotation.boundingPoly, this.boundingBoxExistsMessage),
+			),
 			...this.validateVertices(verticesParameter, annotation.boundingPoly),
 		];
 	}
@@ -114,11 +114,17 @@ export default class GoogleCloudAnnotationResponseValidator extends Validator<Go
 		if (!polygon) {
 			return [];
 		}
-		if (!polygon.vertices) {
-			return [this.ensureVerticesExist(parameter, polygon)];
-		}
-		return polygon.vertices.map(
-			(vertex, i) => new Validation(`${parameter}[${i}]`, this.isValidVertex(vertex)),
+		return [
+			this.ensureVerticesExist(parameter, polygon),
+			...this.ensureVerticesAreWellFormatted(parameter, polygon),
+		];
+	}
+
+	private ensureVerticesAreWellFormatted(parameter: string, polygon: GoogleCloudBoundingPolygon) {
+		return (
+			polygon.vertices?.map(
+				(vertex, i) => new Validation(`${parameter}[${i}]`, this.isValidVertex(vertex)),
+			) ?? []
 		);
 	}
 
