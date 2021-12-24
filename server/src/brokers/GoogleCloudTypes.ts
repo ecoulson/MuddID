@@ -5,6 +5,7 @@ export type GoogleCloudAnnotation = GoogleCloudFaceAnnotation | GoogleCloudEntit
 export type GoogleCloudFaceAnnotation = google.cloud.vision.v1.IFaceAnnotation;
 export type GoogleCloudEntityAnnotation = google.cloud.vision.v1.IEntityAnnotation;
 export type GoogleCloudVertex = google.cloud.vision.v1.IVertex;
+export type GoogleCloudBoundingPolygon = google.cloud.vision.v1.IBoundingPoly;
 export type GoogleCloudAnnotationFeature = {
 	type: GoogleCloudAnnotationFeatureType;
 };
