@@ -4,17 +4,19 @@ import ImageAnnotationDependencyValidationException from "../models/Exceptions/I
 import ImageAnnotationValidationException from "../models/Exceptions/ImageAnnotationValidationException";
 import AnnotatedImage from "../models/AnnotatedImage";
 import IImageAnnotationFoundationService from "./IImageAnnotationFoundationService";
-import NullImageAnnotationResponseException from "../models/Exceptions/NullImageAnnotationResponseException";
 import EmptyAnnotationImageException from "../models/Exceptions/EmptyAnnotationImageException";
 import GoogleCloudAnnotationResponseMapper from "../mappers/GoogleCloudAnnotationResponseMapper";
+import GoogleCloudAnnotationResponseValidator from "../validation/GoogleCloudAnnotationResponseValidator";
 import { GoogleCloudAnnotationResponse } from "../brokers/GoogleCloudTypes";
 
 export default class ImageAnnotationFoundationService implements IImageAnnotationFoundationService {
 	private imageAnnotationBroker: GoogleCloudImageAnnotationBroker;
 	private googleCloudAnnotationResponseMapper: GoogleCloudAnnotationResponseMapper;
+	private googleCloudResponseValidator: GoogleCloudAnnotationResponseValidator;
 
 	constructor(imageAnnotationBroker: GoogleCloudImageAnnotationBroker) {
 		this.imageAnnotationBroker = imageAnnotationBroker;
+		this.googleCloudResponseValidator = new GoogleCloudAnnotationResponseValidator();
 		this.googleCloudAnnotationResponseMapper = new GoogleCloudAnnotationResponseMapper();
 	}
 
@@ -25,6 +27,12 @@ export default class ImageAnnotationFoundationService implements IImageAnnotatio
 		return this.googleCloudAnnotationResponseMapper.mapToAnnotatedImage(file, response);
 	}
 
+	private validateFile(file: Buffer) {
+		if (file.byteLength === 0) {
+			throw new ImageAnnotationValidationException(new EmptyAnnotationImageException());
+		}
+	}
+
 	private async makeAnnotationRequest(file: Buffer) {
 		try {
 			return await this.imageAnnotationBroker.annotateImage(file);
@@ -33,17 +41,11 @@ export default class ImageAnnotationFoundationService implements IImageAnnotatio
 		}
 	}
 
-	private validateFile(file: Buffer) {
-		if (file.byteLength === 0) {
-			throw new ImageAnnotationValidationException(new EmptyAnnotationImageException());
-		}
-	}
-
 	private validateResponse(response: GoogleCloudAnnotationResponse) {
-		if (!response) {
-			throw new ImageAnnotationDependencyValidationException(
-				new NullImageAnnotationResponseException(),
-			);
+		try {
+			this.googleCloudResponseValidator.validate(response);
+		} catch (error) {
+			throw new ImageAnnotationDependencyValidationException(error);
 		}
 	}
 }

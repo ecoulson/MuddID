@@ -6,6 +6,7 @@ import {
 	GoogleCloudVertex,
 } from "../brokers/GoogleCloudTypes";
 import IllegalGoogleCloudAnnotationResponseException from "../models/Exceptions/IllegalGoogleCloudAnnotationResponseException";
+import NullImageAnnotationResponseException from "../models/Exceptions/NullImageAnnotationResponseException";
 import { isNil } from "./Conditions";
 import IValidation from "./IValidation";
 import IValidationResult from "./IValidationResult";
@@ -27,7 +28,10 @@ export default class GoogleCloudAnnotationResponseValidator extends Validator<Go
 	private readonly invalidVertexMessage = "Vertex must have an x and a y value";
 	private readonly descriptionExistsMessage = "Must exist on the text annotation";
 
-	public validate(response: GoogleCloudAnnotationResponse): void {
+	public validate(response: GoogleCloudAnnotationResponse | null | undefined): void {
+		if (isNil(response)) {
+			throw new NullImageAnnotationResponseException();
+		}
 		const exception = new IllegalGoogleCloudAnnotationResponseException();
 		this.executeValidation(
 			exception,

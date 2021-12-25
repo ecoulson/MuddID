@@ -32,6 +32,8 @@ export default class Exception extends Error {
 	}
 
 	public throwIfContainsErrors() {
-		throw this;
+		if (this.data.size > 0) {
+			throw this;
+		}
 	}
 }

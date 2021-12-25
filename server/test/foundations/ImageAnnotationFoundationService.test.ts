@@ -20,32 +20,28 @@ describe("Image Annotation Foundation Service Tests", () => {
 		const response = createFakeGoogleCloudAnnotationResponse();
 
 		when(mockedAnnotationBroker.annotateImage(file)).thenResolve(response);
-		const expectedAnnotatedImage = createExpectedAnnotatedImageFromResponse(
-			file,
-			response
-		);
+		const expectedAnnotatedImage = createExpectedAnnotatedImageFromResponse(file, response);
 
 		const annotationBroker = instance(mockedAnnotationBroker);
-		const imageAnnotationFoundationService =
-			new ImageAnnotationFoundationService(annotationBroker);
-
-		const actualAnnotatedImage =
-			await imageAnnotationFoundationService.annotateImage(file);
-
-		expect(actualAnnotatedImage).toEqual<AnnotatedImage>(
-			expectedAnnotatedImage
+		const imageAnnotationFoundationService = new ImageAnnotationFoundationService(
+			annotationBroker,
 		);
+
+		const actualAnnotatedImage = await imageAnnotationFoundationService.annotateImage(file);
+
+		expect(actualAnnotatedImage).toEqual<AnnotatedImage>(expectedAnnotatedImage);
 		verify(mockedAnnotationBroker.annotateImage(file)).called();
 	});
 
 	test("Should throw a validation exception for an empty file", async () => {
 		const file = Buffer.from("");
 		const expectedException = new ImageAnnotationValidationException(
-			new EmptyAnnotationImageException()
+			new EmptyAnnotationImageException(),
 		);
 		const annotationBroker = instance(mockedAnnotationBroker);
-		const imageAnnotationFoundationService =
-			new ImageAnnotationFoundationService(annotationBroker);
+		const imageAnnotationFoundationService = new ImageAnnotationFoundationService(
+			annotationBroker,
+		);
 
 		try {
 			expect.assertions(1);
@@ -59,16 +55,13 @@ describe("Image Annotation Foundation Service Tests", () => {
 	test("Should throw a dependency exception when the broker throws", async () => {
 		const file = Buffer.from("content");
 		const brokerException = new Error("Failed to making call to GCP api");
-		const expectedException = new ImageAnnotationDependencyException(
-			brokerException
-		);
+		const expectedException = new ImageAnnotationDependencyException(brokerException);
 
-		when(mockedAnnotationBroker.annotateImage(file)).thenThrow(
-			brokerException
-		);
+		when(mockedAnnotationBroker.annotateImage(file)).thenThrow(brokerException);
 		const annotationBroker = instance(mockedAnnotationBroker);
-		const imageAnnotationFoundationService =
-			new ImageAnnotationFoundationService(annotationBroker);
+		const imageAnnotationFoundationService = new ImageAnnotationFoundationService(
+			annotationBroker,
+		);
 
 		try {
 			expect.assertions(1);
@@ -82,22 +75,19 @@ describe("Image Annotation Foundation Service Tests", () => {
 	test("Should throw a dependency validation exception when response is undefined", async () => {
 		const file = Buffer.from("content");
 		const validationException = new NullImageAnnotationResponseException();
-		const expectedException =
-			new ImageAnnotationDependencyValidationException(
-				validationException
-			);
-
-		when(mockedAnnotationBroker.annotateImage(file)).thenResolve(
-			undefined as any
+		const expectedException = new ImageAnnotationDependencyValidationException(
+			validationException,
 		);
+
+		when(mockedAnnotationBroker.annotateImage(file)).thenResolve(undefined as any);
 		const annotationBroker = instance(mockedAnnotationBroker);
-		const imageAnnotationFoundaationService =
-			new ImageAnnotationFoundationService(annotationBroker);
+		const imageAnnotationFoundationService = new ImageAnnotationFoundationService(
+			annotationBroker,
+		);
 
 		expect.assertions(1);
-
 		try {
-			await imageAnnotationFoundaationService.annotateImage(file);
+			await imageAnnotationFoundationService.annotateImage(file);
 		} catch (error) {
 			expect(error).toEqual(expectedException);
 			verify(mockedAnnotationBroker.annotateImage(file)).once();

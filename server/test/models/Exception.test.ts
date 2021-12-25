@@ -46,6 +46,16 @@ describe("Exception Suite", () => {
 		}
 	});
 
+	test("When there are no errors on the exception it should not throw", () => {
+		const exception = new Exception();
+
+		try {
+			exception.throwIfContainsErrors();
+		} catch (error) {
+			fail("Should not throw an exception");
+		}
+	});
+
 	test("When adding data to the exception it should add the data", () => {
 		const data = new Map([["key", ["value"]]]);
 		const exception = new Exception();

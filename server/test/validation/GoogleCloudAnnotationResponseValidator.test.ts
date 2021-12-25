@@ -1,8 +1,20 @@
 import IllegalGoogleCloudAnnotationResponseException from "../../src/models/Exceptions/IllegalGoogleCloudAnnotationResponseException";
+import NullImageAnnotationResponseException from "../../src/models/Exceptions/NullImageAnnotationResponseException";
 import GoogleCloudAnnotationResponseValidator from "../../src/validation/GoogleCloudAnnotationResponseValidator";
 
 describe("Google Cloud Annotation Response Validator Suite", () => {
 	const validator = new GoogleCloudAnnotationResponseValidator();
+
+	test("Should throw an exception when the response is undefined or null", () => {
+		const expectedError = new NullImageAnnotationResponseException();
+
+		expect.assertions(1);
+		try {
+			validator.validate(null);
+		} catch (error) {
+			expect(error).toEqual(expectedError);
+		}
+	});
 
 	test("Should throw an exception when the response has no annotations", () => {
 		const expectedError = new IllegalGoogleCloudAnnotationResponseException(
