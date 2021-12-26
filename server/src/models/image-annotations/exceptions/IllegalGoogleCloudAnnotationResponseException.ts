@@ -1,4 +1,4 @@
-import Exception from "../Exception";
+import Exception from "../../common/exception/Exception";
 
 export default class IllegalGoogleCloudAnnotationResponseException extends Exception {
 	constructor(data?: Map<string, string[]>) {

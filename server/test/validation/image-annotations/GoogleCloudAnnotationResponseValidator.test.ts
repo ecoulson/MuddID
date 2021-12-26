@@ -1,6 +1,6 @@
-import IllegalGoogleCloudAnnotationResponseException from "../../src/models/Exceptions/IllegalGoogleCloudAnnotationResponseException";
-import NullImageAnnotationResponseException from "../../src/models/Exceptions/NullImageAnnotationResponseException";
-import GoogleCloudAnnotationResponseValidator from "../../src/validation/GoogleCloudAnnotationResponseValidator";
+import IllegalGoogleCloudAnnotationResponseException from "../../../src/models/image-annotations/exceptions/IllegalGoogleCloudAnnotationResponseException";
+import NullImageAnnotationResponseException from "../../../src/models/image-annotations/exceptions/NullImageAnnotationResponseException";
+import GoogleCloudAnnotationResponseValidator from "../../../src/validations/image-annotations/GoogleCloudAnnotationResponseValidator";
 
 describe("Google Cloud Annotation Response Validator Suite", () => {
 	const validator = new GoogleCloudAnnotationResponseValidator();

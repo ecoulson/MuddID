@@ -2,18 +2,18 @@ import BoundingBox from "./BoundingBox";
 import TextAnnotation from "./TextAnnotation";
 
 export default class AnnotatedImage {
-	public readonly file: Buffer;
+	public readonly content: Buffer;
 	public readonly faceAnnotations: BoundingBox[];
 	public readonly logoAnnotations: BoundingBox[];
 	public readonly textAnnotations: TextAnnotation[];
 
 	constructor(
-		file: Buffer,
+		content: Buffer,
 		faceAnnotations: BoundingBox[] = [],
 		logoAnnotations: BoundingBox[] = [],
 		textAnnotations: TextAnnotation[] = [],
 	) {
-		this.file = file;
+		this.content = content;
 		this.faceAnnotations = faceAnnotations;
 		this.logoAnnotations = logoAnnotations;
 		this.textAnnotations = textAnnotations;

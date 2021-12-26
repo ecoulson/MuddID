@@ -1,18 +1,19 @@
 import { google } from "@google-cloud/vision/build/protos/protos";
-import GoogleCloudAnnotationResponseMapper from "../../src/mappers/GoogleCloudAnnotationResponseMapper";
-import AnnotatedImage from "../../src/models/AnnotatedImage";
-import BoundingBox from "../../src/models/BoundingBox";
-import TextAnnotation from "../../src/models/TextAnnotation";
+import GoogleCloudAnnotationResponseMapper from "../../../src/mappers/image-annotations/GoogleCloudAnnotationResponseMapper";
+import BufferedFile from "../../../src/models/common/files/BufferedFile";
+import AnnotatedImage from "../../../src/models/image-annotations/AnnotatedImage";
+import BoundingBox from "../../../src/models/image-annotations/BoundingBox";
+import TextAnnotation from "../../../src/models/image-annotations/TextAnnotation";
 import {
 	createExpectedAnnotatedImageFromResponse,
 	createFakeGoogleCloudAnnotationResponse,
-} from "../fakes/FakeGoogleCloudAnnotationResponse";
+} from "../../fakes/FakeGoogleCloudAnnotationResponse";
 
 type GoogleCloudAnnotationResponse = google.cloud.vision.v1.IAnnotateImageResponse;
 
 describe("Google Cloud Annotation Response Mapper Suite", () => {
 	const mapper = new GoogleCloudAnnotationResponseMapper();
-	const file = Buffer.from("");
+	const file = new BufferedFile("file.jpg", Buffer.from(""));
 
 	test("When mapping a validated response it should return an annotated image", () => {
 		const inputResponse = createFakeGoogleCloudAnnotationResponse();
@@ -28,7 +29,7 @@ describe("Google Cloud Annotation Response Mapper Suite", () => {
 
 	test("When mapping a null bounding box annotation should be an empty array", () => {
 		const inputResponse: GoogleCloudAnnotationResponse = {};
-		const expectedAnnotatedImage = new AnnotatedImage(file);
+		const expectedAnnotatedImage = new AnnotatedImage(file.content);
 
 		const actualAnnotatedImage = mapper.mapToAnnotatedImage(file, inputResponse);
 
@@ -43,7 +44,7 @@ describe("Google Cloud Annotation Response Mapper Suite", () => {
 				},
 			],
 		};
-		const expectedAnnotatedImage = new AnnotatedImage(file, [new BoundingBox([])]);
+		const expectedAnnotatedImage = new AnnotatedImage(file.content, [new BoundingBox([])]);
 
 		const actualAnnotatedImage = mapper.mapToAnnotatedImage(file, inputResponse);
 
@@ -60,7 +61,7 @@ describe("Google Cloud Annotation Response Mapper Suite", () => {
 				},
 			],
 		};
-		const expectedAnnotatedImage = new AnnotatedImage(file, [new BoundingBox([])]);
+		const expectedAnnotatedImage = new AnnotatedImage(file.content, [new BoundingBox([])]);
 
 		const actualAnnotatedImage = mapper.mapToAnnotatedImage(file, inputResponse);
 
@@ -81,7 +82,7 @@ describe("Google Cloud Annotation Response Mapper Suite", () => {
 				},
 			],
 		};
-		const expectedAnnotatedImage = new AnnotatedImage(file, [new BoundingBox([])]);
+		const expectedAnnotatedImage = new AnnotatedImage(file.content, [new BoundingBox([])]);
 
 		const actualAnnotatedImage = mapper.mapToAnnotatedImage(file, inputResponse);
 
@@ -96,7 +97,12 @@ describe("Google Cloud Annotation Response Mapper Suite", () => {
 				},
 			],
 		};
-		const expectedAnnotatedImage = new AnnotatedImage(file, [], [], [new TextAnnotation("")]);
+		const expectedAnnotatedImage = new AnnotatedImage(
+			file.content,
+			[],
+			[],
+			[new TextAnnotation("")],
+		);
 
 		const actualAnnotatedImage = mapper.mapToAnnotatedImage(file, inputResponse);
 

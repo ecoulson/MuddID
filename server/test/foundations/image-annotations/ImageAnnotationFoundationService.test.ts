@@ -1,22 +1,24 @@
-import GoogleCloudImageAnnotationBroker from "../../src/brokers/GoogleCloudImageAnnotationBroker";
-import ImageAnnotationFoundationService from "../../src/foundations/ImageAnnotationFoundationService";
-import AnnotatedImage from "../../src/models/AnnotatedImage";
+import GoogleCloudImageAnnotationBroker from "../../../src/brokers/GoogleCloudImageAnnotationBroker";
+import ImageAnnotationFoundationService from "../../../src/foundations/image-annotations/ImageAnnotationFoundationService";
+import AnnotatedImage from "../../../src/models/image-annotations/AnnotatedImage";
 import { instance, mock, verify, when } from "ts-mockito";
 import {
 	createExpectedAnnotatedImageFromResponse,
 	createFakeGoogleCloudAnnotationResponse,
-} from "../fakes/FakeGoogleCloudAnnotationResponse";
-import ImageAnnotationValidationException from "../../src/models/Exceptions/ImageAnnotationValidationException";
-import ImageAnnotationDependencyException from "../../src/models/Exceptions/ImageAnnotationDependencyException";
-import ImageAnnotationDependencyValidationException from "../../src/models/Exceptions/ImageAnnotationDependencyValidationException";
-import EmptyAnnotationImageException from "../../src/models/Exceptions/EmptyAnnotationImageException";
-import NullImageAnnotationResponseException from "../../src/models/Exceptions/NullImageAnnotationResponseException";
+} from "../../fakes/FakeGoogleCloudAnnotationResponse";
+import ImageAnnotationValidationException from "../../../src/models/image-annotations/exceptions/ImageAnnotationValidationException";
+import ImageAnnotationDependencyException from "../../../src/models/image-annotations/exceptions/ImageAnnotationDependencyException";
+import ImageAnnotationDependencyValidationException from "../../../src/models/image-annotations/exceptions/ImageAnnotationDependencyValidationException";
+import NullImageAnnotationResponseException from "../../../src/models/image-annotations/exceptions/NullImageAnnotationResponseException";
+import IllegalBufferedAnnotationImage from "../../../src/models/image-annotations/exceptions/IllegalBufferedAnnotationImage";
+import BufferedFile from "../../../src/models/common/files/BufferedFile";
 
 const mockedAnnotationBroker = mock(GoogleCloudImageAnnotationBroker);
+const name = "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d.jpg";
 
 describe("Image Annotation Foundation Service Tests", () => {
 	test("Should annotate image with requested features", async () => {
-		const file = Buffer.from("file content");
+		const file = new BufferedFile(name, Buffer.from("file content"));
 		const response = createFakeGoogleCloudAnnotationResponse();
 
 		when(mockedAnnotationBroker.annotateImage(file)).thenResolve(response);
@@ -34,9 +36,12 @@ describe("Image Annotation Foundation Service Tests", () => {
 	});
 
 	test("Should throw a validation exception for an empty file", async () => {
-		const file = Buffer.from("");
+		const file = new BufferedFile(name, Buffer.from(""));
+		const expectedErrorData = new Map([
+			["content", ["File content can not be an empty buffer"]],
+		]);
 		const expectedException = new ImageAnnotationValidationException(
-			new EmptyAnnotationImageException(),
+			new IllegalBufferedAnnotationImage(expectedErrorData),
 		);
 		const annotationBroker = instance(mockedAnnotationBroker);
 		const imageAnnotationFoundationService = new ImageAnnotationFoundationService(
@@ -53,7 +58,7 @@ describe("Image Annotation Foundation Service Tests", () => {
 	});
 
 	test("Should throw a dependency exception when the broker throws", async () => {
-		const file = Buffer.from("content");
+		const file = new BufferedFile(name, Buffer.from("content"));
 		const brokerException = new Error("Failed to making call to GCP api");
 		const expectedException = new ImageAnnotationDependencyException(brokerException);
 
@@ -73,7 +78,7 @@ describe("Image Annotation Foundation Service Tests", () => {
 	});
 
 	test("Should throw a dependency validation exception when response is undefined", async () => {
-		const file = Buffer.from("content");
+		const file = new BufferedFile(name, Buffer.from("content"));
 		const validationException = new NullImageAnnotationResponseException();
 		const expectedException = new ImageAnnotationDependencyValidationException(
 			validationException,

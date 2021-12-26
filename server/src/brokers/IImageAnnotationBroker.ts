@@ -1,3 +1,5 @@
+import BufferedFile from "../models/common/files/BufferedFile";
+
 export default interface IImageAnnotationBroker<Response> {
-	annotateImage(file: Buffer): Promise<Response>;
+	annotateImage(file: BufferedFile): Promise<Response>;
 }

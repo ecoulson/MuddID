@@ -3,16 +3,20 @@ import {
 	GoogleCloudAnnotationResponse,
 	GoogleCloudEntityAnnotation,
 	GoogleCloudVertex,
-} from "../brokers/GoogleCloudTypes";
-import AnnotatedImage from "../models/AnnotatedImage";
-import BoundingBox from "../models/BoundingBox";
-import TextAnnotation from "../models/TextAnnotation";
-import Vertex from "../models/Vertex";
+} from "../../brokers/GoogleCloudTypes";
+import BufferedFile from "../../models/common/files/BufferedFile";
+import AnnotatedImage from "../../models/image-annotations/AnnotatedImage";
+import BoundingBox from "../../models/image-annotations/BoundingBox";
+import TextAnnotation from "../../models/image-annotations/TextAnnotation";
+import Vertex from "../../models/image-annotations/Vertex";
 
 export default class GoogleCloudAnnotationResponseMapper {
-	mapToAnnotatedImage(file: Buffer, response: GoogleCloudAnnotationResponse): AnnotatedImage {
+	mapToAnnotatedImage(
+		{ content }: BufferedFile,
+		response: GoogleCloudAnnotationResponse,
+	): AnnotatedImage {
 		return new AnnotatedImage(
-			file,
+			content,
 			this.mapToBoundingBoxes(response.faceAnnotations),
 			this.mapToBoundingBoxes(response.logoAnnotations),
 			this.mapToTextAnnotations(response),

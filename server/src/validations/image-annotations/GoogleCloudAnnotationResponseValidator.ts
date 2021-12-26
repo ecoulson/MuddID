@@ -4,15 +4,15 @@ import {
 	GoogleCloudBoundingPolygon,
 	GoogleCloudEntityAnnotation,
 	GoogleCloudVertex,
-} from "../brokers/GoogleCloudTypes";
-import IllegalGoogleCloudAnnotationResponseException from "../models/Exceptions/IllegalGoogleCloudAnnotationResponseException";
-import NullImageAnnotationResponseException from "../models/Exceptions/NullImageAnnotationResponseException";
-import { isNil } from "./Conditions";
-import IValidation from "./IValidation";
-import IValidationResult from "./IValidationResult";
-import Validation from "./Validation";
-import ValidationResult from "./ValidationResult";
-import Validator from "./Validator";
+} from "../../brokers/GoogleCloudTypes";
+import IllegalGoogleCloudAnnotationResponseException from "../../models/image-annotations/exceptions/IllegalGoogleCloudAnnotationResponseException";
+import NullImageAnnotationResponseException from "../../models/image-annotations/exceptions/NullImageAnnotationResponseException";
+import { isNil } from "../common/Conditions";
+import IValidation from "../common/IValidation";
+import IValidationResult from "../common/IValidationResult";
+import Validation from "../common/Validation";
+import ValidationResult from "../common/ValidationResult";
+import Validator from "../common/Validator";
 
 export default class GoogleCloudAnnotationResponseValidator extends Validator<GoogleCloudAnnotationResponse> {
 	private readonly faceAnnotationParameter = "faceAnnotations";

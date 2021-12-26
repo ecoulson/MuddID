@@ -1,4 +1,4 @@
-import Exception from "../models/Exception";
+import Exception from "../../models/common/exception/Exception";
 import IValidator from "./IValidator";
 import IValidation from "./IValidation";
 

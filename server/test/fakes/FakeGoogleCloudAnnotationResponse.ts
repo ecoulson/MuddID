@@ -1,8 +1,9 @@
 import { GoogleCloudAnnotationResponse } from "../../src/brokers/GoogleCloudTypes";
-import AnnotatedImage from "../../src/models/AnnotatedImage";
-import BoundingBox from "../../src/models/BoundingBox";
-import TextAnnotation from "../../src/models/TextAnnotation";
-import Vertex from "../../src/models/Vertex";
+import BufferedFile from "../../src/models/common/files/BufferedFile";
+import AnnotatedImage from "../../src/models/image-annotations/AnnotatedImage";
+import BoundingBox from "../../src/models/image-annotations/BoundingBox";
+import TextAnnotation from "../../src/models/image-annotations/TextAnnotation";
+import Vertex from "../../src/models/image-annotations/Vertex";
 
 export function createFakeGoogleCloudAnnotationResponse(): GoogleCloudAnnotationResponse {
 	return {
@@ -39,11 +40,11 @@ export function createFakeGoogleCloudAnnotationResponse(): GoogleCloudAnnotation
 }
 
 export function createExpectedAnnotatedImageFromResponse(
-	file: Buffer,
+	{ content }: BufferedFile,
 	response: GoogleCloudAnnotationResponse,
 ): AnnotatedImage {
 	return new AnnotatedImage(
-		file,
+		content,
 		[
 			new BoundingBox(
 				response.faceAnnotations![0].boundingPoly!.vertices!.map(

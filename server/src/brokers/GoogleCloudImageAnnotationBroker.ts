@@ -1,3 +1,4 @@
+import BufferedFile from "../models/common/files/BufferedFile";
 import { GoogleCloudAnnotationResponse } from "./GoogleCloudTypes";
 import IGoogleCloudImageAnnotationBrokerConfiguration from "./IGoogleCloudImageAnnotationBrokerConfiguration.ts";
 import IImageAnnotationBroker from "./IImageAnnotationBroker";
@@ -11,13 +12,11 @@ export default class GoogleCloudImageAnnotationBroker
 		this.configuration = configuration;
 	}
 
-	async annotateImage(file: Buffer): Promise<GoogleCloudAnnotationResponse> {
+	async annotateImage({ content }: BufferedFile): Promise<GoogleCloudAnnotationResponse> {
 		const { client, features } = this.configuration;
 		const [result] = await client.annotateImage({
 			features: features,
-			image: {
-				content: file,
-			},
+			image: { content },
 		});
 		return result;
 	}
