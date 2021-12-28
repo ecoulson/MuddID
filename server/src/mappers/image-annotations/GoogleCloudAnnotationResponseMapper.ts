@@ -3,7 +3,7 @@ import {
 	GoogleCloudAnnotationResponse,
 	GoogleCloudEntityAnnotation,
 	GoogleCloudVertex,
-} from "../../brokers/GoogleCloudTypes";
+} from "../../types/GoogleCloudTypes";
 import BufferedFile from "../../models/common/files/BufferedFile";
 import AnnotatedImage from "../../models/image-annotations/AnnotatedImage";
 import BoundingBox from "../../models/image-annotations/BoundingBox";

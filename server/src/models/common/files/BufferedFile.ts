@@ -1,14 +1,10 @@
-import { parse } from "path";
+import File from "./File";
 
-export default class BufferedFile {
+export default class BufferedFile extends File {
 	public readonly content: Buffer;
-	public readonly extension: string;
-	public readonly name: string;
 
 	constructor(filename: string, content: Buffer) {
-		const { ext, name } = parse(filename);
-		this.extension = ext;
-		this.name = name;
+		super(filename);
 		this.content = content;
 	}
 }

@@ -1,4 +1,4 @@
-import { GoogleCloudVertex } from "../brokers/GoogleCloudTypes";
+import { GoogleCloudVertex } from "../types/GoogleCloudTypes";
 
 export interface BoundingBox {
 	left: number;

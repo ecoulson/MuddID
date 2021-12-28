@@ -1,6 +1,6 @@
 import { ReadStream } from "fs";
 import sharp from "sharp";
-import { GoogleCloudAnnotationResponse } from "../brokers/GoogleCloudTypes";
+import { GoogleCloudAnnotationResponse } from "../types/GoogleCloudTypes";
 import { BoundingBox, BoundingBoxBuilder } from "./bounding-box";
 
 export enum AnnotationType {

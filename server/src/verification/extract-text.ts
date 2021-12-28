@@ -1,4 +1,4 @@
-import { GoogleCloudAnnotationResponse } from "../brokers/GoogleCloudTypes";
+import { GoogleCloudAnnotationResponse } from "../types/GoogleCloudTypes";
 
 function extractText(annotations: GoogleCloudAnnotationResponse) {
 	if (!annotations.textAnnotations) {

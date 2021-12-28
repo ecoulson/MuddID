@@ -4,7 +4,7 @@ import {
 	GoogleCloudBoundingPolygon,
 	GoogleCloudEntityAnnotation,
 	GoogleCloudVertex,
-} from "../../brokers/GoogleCloudTypes";
+} from "../../types/GoogleCloudTypes";
 import IllegalGoogleCloudAnnotationResponseException from "../../models/image-annotations/exceptions/IllegalGoogleCloudAnnotationResponseException";
 import NullImageAnnotationResponseException from "../../models/image-annotations/exceptions/NullImageAnnotationResponseException";
 import { isNil } from "../common/Conditions";

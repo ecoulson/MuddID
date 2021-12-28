@@ -1,4 +1,4 @@
-import GoogleCloudImageAnnotationBroker from "../../../src/brokers/GoogleCloudImageAnnotationBroker";
+import GoogleCloudImageAnnotationBroker from "../../../src/brokers/image-annotations/GoogleCloudImageAnnotationBroker";
 import ImageAnnotationFoundationService from "../../../src/foundations/image-annotations/ImageAnnotationFoundationService";
 import AnnotatedImage from "../../../src/models/image-annotations/AnnotatedImage";
 import { instance, mock, verify, when } from "ts-mockito";

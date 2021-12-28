@@ -1,5 +1,5 @@
-import BufferedFile from "../models/common/files/BufferedFile";
-import { GoogleCloudAnnotationResponse } from "./GoogleCloudTypes";
+import BufferedFile from "../../models/common/files/BufferedFile";
+import { GoogleCloudAnnotationResponse } from "../../types/GoogleCloudTypes";
 import IGoogleCloudImageAnnotationBrokerConfiguration from "./IGoogleCloudImageAnnotationBrokerConfiguration.ts";
 import IImageAnnotationBroker from "./IImageAnnotationBroker";
 

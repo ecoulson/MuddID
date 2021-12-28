@@ -1,4 +1,4 @@
-import GoogleCloudImageAnnotationBroker from "../../brokers/GoogleCloudImageAnnotationBroker";
+import GoogleCloudImageAnnotationBroker from "../../brokers/image-annotations/GoogleCloudImageAnnotationBroker";
 import ImageAnnotationDependencyException from "../../models/image-annotations/exceptions/ImageAnnotationDependencyException";
 import ImageAnnotationDependencyValidationException from "../../models/image-annotations/exceptions/ImageAnnotationDependencyValidationException";
 import ImageAnnotationValidationException from "../../models/image-annotations/exceptions/ImageAnnotationValidationException";
@@ -6,7 +6,7 @@ import AnnotatedImage from "../../models/image-annotations/AnnotatedImage";
 import IImageAnnotationFoundationService from "./IImageAnnotationFoundationService";
 import GoogleCloudAnnotationResponseMapper from "../../mappers/image-annotations/GoogleCloudAnnotationResponseMapper";
 import GoogleCloudAnnotationResponseValidator from "../../validations/image-annotations/GoogleCloudAnnotationResponseValidator";
-import { GoogleCloudAnnotationResponse } from "../../brokers/GoogleCloudTypes";
+import { GoogleCloudAnnotationResponse } from "../../types/GoogleCloudTypes";
 import BufferedFile from "../../models/common/files/BufferedFile";
 import ImageValidator from "../../validations/image-annotations/ImageValidator";
 
@@ -29,7 +29,7 @@ export default class ImageAnnotationFoundationService implements IImageAnnotatio
 		this.validateResponse(response);
 		return this.googleCloudAnnotationResponseMapper.mapToAnnotatedImage(file, response);
 	}
-
+			
 	private validateFile(file: BufferedFile) {
 		try {
 			this.imageValidator.validate(file);

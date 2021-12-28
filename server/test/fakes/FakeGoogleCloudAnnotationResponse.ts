@@ -1,4 +1,4 @@
-import { GoogleCloudAnnotationResponse } from "../../src/brokers/GoogleCloudTypes";
+import { GoogleCloudAnnotationResponse } from "../../src/types/GoogleCloudTypes";
 import BufferedFile from "../../src/models/common/files/BufferedFile";
 import AnnotatedImage from "../../src/models/image-annotations/AnnotatedImage";
 import BoundingBox from "../../src/models/image-annotations/BoundingBox";
