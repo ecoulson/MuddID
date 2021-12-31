@@ -1,6 +1,6 @@
 import Vertex from "./Vertex";
 
-export default class BoundingBox {
+export default class BoundingPolygon {
 	public readonly boundingPolygon: Vertex[];
 
 	constructor(boundingPolygon: Vertex[]) {

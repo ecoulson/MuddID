@@ -1,4 +1,4 @@
-import Exception from "../../common/exception/Exception";
+import Exception from "../../common/exceptions/Exception";
 
 export default class NullImageAnnotationResponseException extends Exception {
 	constructor() {

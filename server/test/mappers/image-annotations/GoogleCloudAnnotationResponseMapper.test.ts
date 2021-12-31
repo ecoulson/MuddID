@@ -2,7 +2,7 @@ import { google } from "@google-cloud/vision/build/protos/protos";
 import GoogleCloudAnnotationResponseMapper from "../../../src/mappers/image-annotations/GoogleCloudAnnotationResponseMapper";
 import BufferedFile from "../../../src/models/common/files/BufferedFile";
 import AnnotatedImage from "../../../src/models/image-annotations/AnnotatedImage";
-import BoundingBox from "../../../src/models/image-annotations/BoundingBox";
+import BoundingPolygon from "../../../src/models/common/geometry/BoundingPolygon";
 import TextAnnotation from "../../../src/models/image-annotations/TextAnnotation";
 import {
 	createExpectedAnnotatedImageFromResponse,
@@ -44,7 +44,7 @@ describe("Google Cloud Annotation Response Mapper Suite", () => {
 				},
 			],
 		};
-		const expectedAnnotatedImage = new AnnotatedImage(file.content, [new BoundingBox([])]);
+		const expectedAnnotatedImage = new AnnotatedImage(file.content, [new BoundingPolygon([])]);
 
 		const actualAnnotatedImage = mapper.mapToAnnotatedImage(file, inputResponse);
 
@@ -61,7 +61,7 @@ describe("Google Cloud Annotation Response Mapper Suite", () => {
 				},
 			],
 		};
-		const expectedAnnotatedImage = new AnnotatedImage(file.content, [new BoundingBox([])]);
+		const expectedAnnotatedImage = new AnnotatedImage(file.content, [new BoundingPolygon([])]);
 
 		const actualAnnotatedImage = mapper.mapToAnnotatedImage(file, inputResponse);
 
@@ -82,7 +82,7 @@ describe("Google Cloud Annotation Response Mapper Suite", () => {
 				},
 			],
 		};
-		const expectedAnnotatedImage = new AnnotatedImage(file.content, [new BoundingBox([])]);
+		const expectedAnnotatedImage = new AnnotatedImage(file.content, [new BoundingPolygon([])]);
 
 		const actualAnnotatedImage = mapper.mapToAnnotatedImage(file, inputResponse);
 

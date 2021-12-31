@@ -6,9 +6,9 @@ import {
 } from "../../types/GoogleCloudTypes";
 import BufferedFile from "../../models/common/files/BufferedFile";
 import AnnotatedImage from "../../models/image-annotations/AnnotatedImage";
-import BoundingBox from "../../models/image-annotations/BoundingBox";
+import BoundingPolygon from "../../models/common/geometry/BoundingPolygon";
 import TextAnnotation from "../../models/image-annotations/TextAnnotation";
-import Vertex from "../../models/image-annotations/Vertex";
+import Vertex from "../../models/common/geometry/Vertex";
 
 export default class GoogleCloudAnnotationResponseMapper {
 	mapToAnnotatedImage(
@@ -25,18 +25,18 @@ export default class GoogleCloudAnnotationResponseMapper {
 
 	private mapToBoundingBoxes(
 		annotations: GoogleCloudAnnotation[] | null | undefined,
-	): BoundingBox[] {
+	): BoundingPolygon[] {
 		if (!annotations) {
 			return [];
 		}
 		return annotations.map((annotation) => this.mapToBoundingBox(annotation));
 	}
 
-	private mapToBoundingBox(annotation: GoogleCloudAnnotation): BoundingBox {
+	private mapToBoundingBox(annotation: GoogleCloudAnnotation): BoundingPolygon {
 		if (!annotation.boundingPoly || !annotation.boundingPoly.vertices) {
-			return new BoundingBox([]);
+			return new BoundingPolygon([]);
 		}
-		return new BoundingBox(this.mapAndFilterVertices(annotation));
+		return new BoundingPolygon(this.mapAndFilterVertices(annotation));
 	}
 
 	private mapAndFilterVertices(annotation: GoogleCloudAnnotation) {

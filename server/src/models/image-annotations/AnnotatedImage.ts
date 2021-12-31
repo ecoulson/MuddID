@@ -1,16 +1,16 @@
-import BoundingBox from "./BoundingBox";
+import BoundingPolygon from "../common/geometry/BoundingPolygon";
 import TextAnnotation from "./TextAnnotation";
 
 export default class AnnotatedImage {
 	public readonly content: Buffer;
-	public readonly faceAnnotations: BoundingBox[];
-	public readonly logoAnnotations: BoundingBox[];
+	public readonly faceAnnotations: BoundingPolygon[];
+	public readonly logoAnnotations: BoundingPolygon[];
 	public readonly textAnnotations: TextAnnotation[];
 
 	constructor(
 		content: Buffer,
-		faceAnnotations: BoundingBox[] = [],
-		logoAnnotations: BoundingBox[] = [],
+		faceAnnotations: BoundingPolygon[] = [],
+		logoAnnotations: BoundingPolygon[] = [],
 		textAnnotations: TextAnnotation[] = [],
 	) {
 		this.content = content;

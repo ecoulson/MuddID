@@ -1,4 +1,4 @@
-import Exception from "../../../src/models/common/exception/Exception";
+import Exception from "../../../src/models/common/exceptions/Exception";
 
 describe("Exception Suite", () => {
 	test("When upserting into empty key it should add it to the list", () => {

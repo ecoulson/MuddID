@@ -33,7 +33,7 @@ export default class GoogleCloudAnnotationResponseValidator extends Validator<Go
 			throw new NullImageAnnotationResponseException();
 		}
 		const exception = new IllegalGoogleCloudAnnotationResponseException();
-		this.executeValidation(
+		this.executeValidations(
 			exception,
 			...this.ensureAnnotationsExist(response),
 			...this.validateAnnotation(this.faceAnnotationParameter, response.faceAnnotations),

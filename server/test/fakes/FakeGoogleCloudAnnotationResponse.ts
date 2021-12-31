@@ -1,9 +1,9 @@
 import { GoogleCloudAnnotationResponse } from "../../src/types/GoogleCloudTypes";
 import BufferedFile from "../../src/models/common/files/BufferedFile";
 import AnnotatedImage from "../../src/models/image-annotations/AnnotatedImage";
-import BoundingBox from "../../src/models/image-annotations/BoundingBox";
+import BoundingPolygon from "../../src/models/common/geometry/BoundingPolygon";
 import TextAnnotation from "../../src/models/image-annotations/TextAnnotation";
-import Vertex from "../../src/models/image-annotations/Vertex";
+import Vertex from "../../src/models/common/geometry/Vertex";
 
 export function createFakeGoogleCloudAnnotationResponse(): GoogleCloudAnnotationResponse {
 	return {
@@ -46,14 +46,14 @@ export function createExpectedAnnotatedImageFromResponse(
 	return new AnnotatedImage(
 		content,
 		[
-			new BoundingBox(
+			new BoundingPolygon(
 				response.faceAnnotations![0].boundingPoly!.vertices!.map(
 					({ x, y }) => new Vertex(x!, y!),
 				),
 			),
 		],
 		[
-			new BoundingBox(
+			new BoundingPolygon(
 				response.logoAnnotations![0].boundingPoly!.vertices!.map(
 					({ x, y }) => new Vertex(x!, y!),
 				),

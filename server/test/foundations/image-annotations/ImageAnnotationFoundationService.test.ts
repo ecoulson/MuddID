@@ -1,7 +1,7 @@
 import GoogleCloudImageAnnotationBroker from "../../../src/brokers/image-annotations/GoogleCloudImageAnnotationBroker";
 import ImageAnnotationFoundationService from "../../../src/foundations/image-annotations/ImageAnnotationFoundationService";
 import AnnotatedImage from "../../../src/models/image-annotations/AnnotatedImage";
-import { instance, mock, verify, when } from "ts-mockito";
+import { instance, mock, reset, verify, when } from "ts-mockito";
 import {
 	createExpectedAnnotatedImageFromResponse,
 	createFakeGoogleCloudAnnotationResponse,
@@ -13,10 +13,14 @@ import NullImageAnnotationResponseException from "../../../src/models/image-anno
 import IllegalBufferedAnnotationImage from "../../../src/models/image-annotations/exceptions/IllegalBufferedAnnotationImage";
 import BufferedFile from "../../../src/models/common/files/BufferedFile";
 
-const mockedAnnotationBroker = mock(GoogleCloudImageAnnotationBroker);
-const name = "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d.jpg";
-
 describe("Image Annotation Foundation Service Tests", () => {
+	const mockedAnnotationBroker = mock(GoogleCloudImageAnnotationBroker);
+	const name = "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d.jpg";
+
+	beforeEach(() => {
+		reset(mockedAnnotationBroker);
+	});
+
 	test("Should annotate image with requested features", async () => {
 		const file = new BufferedFile(name, Buffer.from("file content"));
 		const response = createFakeGoogleCloudAnnotationResponse();

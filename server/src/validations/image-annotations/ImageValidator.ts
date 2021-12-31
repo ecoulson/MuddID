@@ -21,7 +21,7 @@ export default class ImageValidator extends Validator<BufferedFile> {
 
 	validate(file: BufferedFile): void {
 		const exception = new IllegalBufferedAnnotationImage();
-		this.executeValidation(
+		this.executeValidations(
 			exception,
 			...this.validateContent(file.content),
 			...this.validateExtension(file.extension),
