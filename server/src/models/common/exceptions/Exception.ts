@@ -1,3 +1,5 @@
+import SerializedException from "./SerializedException";
+
 export default class Exception extends Error {
 	public readonly innerException?: Error;
 	public readonly data: Map<string, string[]>;
@@ -35,5 +37,34 @@ export default class Exception extends Error {
 		if (this.data.size > 0) {
 			throw this;
 		}
+	}
+
+	public serialize(): SerializedException {
+		if (!this.innerException) {
+			return new SerializedException(this.name, this.message, this.convertMapToObject());
+		}
+		if (this.innerException instanceof Exception) {
+			return new SerializedException(
+				this.name,
+				this.message,
+				this.convertMapToObject(),
+				this.innerException.serialize(),
+			);
+		} else {
+			return new SerializedException(
+				this.name,
+				this.message,
+				this.convertMapToObject(),
+				new SerializedException(this.innerException.name, this.innerException.message, {}),
+			);
+		}
+	}
+
+	private convertMapToObject(): Record<string, string[]> {
+		const record: Record<string, string[]> = {};
+		for (let [parameter, errors] of this.data) {
+			record[parameter] = errors;
+		}
+		return record;
 	}
 }

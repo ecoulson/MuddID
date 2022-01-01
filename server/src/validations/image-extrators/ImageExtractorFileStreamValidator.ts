@@ -19,6 +19,6 @@ export default class ImageExtractorFileStreamValidator extends Validator<FileStr
 	}
 
 	private ensureValidFileName(stream: FileStream): IValidationResult {
-		return new ValidationResult(validateUUID(stream.name), "Name is an invalid UUID");
+		return new ValidationResult(!validateUUID(stream.name), "Name is an invalid UUID");
 	}
 }

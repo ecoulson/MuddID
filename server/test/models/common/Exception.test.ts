@@ -1,4 +1,5 @@
 import Exception from "../../../src/models/common/exceptions/Exception";
+import SerializedException from "../../../src/models/common/exceptions/SerializedException";
 
 describe("Exception Suite", () => {
 	test("When upserting into empty key it should add it to the list", () => {
@@ -76,5 +77,74 @@ describe("Exception Suite", () => {
 		exception.addData(newData);
 
 		expect(exception.data).toEqual(expectedException.data);
+	});
+
+	test("When serializing an exception it should have the correct name, message and data", () => {
+		const exception = new Exception(
+			Exception.name,
+			"message",
+			undefined,
+			new Map([["hello", ["world"]]]),
+		);
+		const expectedSerialization = new SerializedException("Exception", "message", {
+			hello: ["world"],
+		});
+
+		const actualSerialization = exception.serialize();
+
+		expect(actualSerialization).toEqual(expectedSerialization);
+	});
+
+	test("When serializing an exception it should have the correct name, message, data, and inner exception", () => {
+		const innerException = new Exception(
+			"Exception",
+			"inner",
+			undefined,
+			new Map([["nested", ["hello world"]]]),
+		);
+		const exception = new Exception(
+			Exception.name,
+			"message",
+			innerException,
+			new Map([["hello", ["world"]]]),
+		);
+		const innerSerialization = new SerializedException("Exception", "inner", {
+			nested: ["hello world"],
+		});
+		const expectedSerialization = new SerializedException(
+			"Exception",
+			"message",
+			{
+				hello: ["world"],
+			},
+			innerSerialization,
+		);
+
+		const actualSerialization = exception.serialize();
+
+		expect(actualSerialization).toEqual(expectedSerialization);
+	});
+
+	test("When serializing an exception it should handle inner exceptions with type of Error", () => {
+		const innerException = new Error("Exception");
+		const exception = new Exception(
+			Exception.name,
+			"message",
+			innerException,
+			new Map([["hello", ["world"]]]),
+		);
+		const innerSerialization = new SerializedException("Error", "Exception", {});
+		const expectedSerialization = new SerializedException(
+			"Exception",
+			"message",
+			{
+				hello: ["world"],
+			},
+			innerSerialization,
+		);
+
+		const actualSerialization = exception.serialize();
+
+		expect(actualSerialization).toEqual(expectedSerialization);
 	});
 });

@@ -1,0 +1,40 @@
+import { Readable } from "stream";
+import FileStream from "../../../src/models/common/files/FileStream";
+import IllegalFileStreamException from "../../../src/models/image-extractors/exceptions/IllegalFileStreamException";
+import ImageExtractorFileStreamValidator from "../../../src/validations/image-extrators/ImageExtractorFileStreamValidator";
+
+describe("Image Extractor File Stream Validator", () => {
+	const validator = new ImageExtractorFileStreamValidator();
+	// const uuid = "b82dbf17-9eee-47f7-8858-bb4fe54c50a8";
+
+	test("When validating an illegal file name it should throw an illegal file stream exception", () => {
+		const inputStream = Readable.from("");
+		const inputFileStream = new FileStream("image.png", inputStream);
+		const expectedValidationErrors = new Map([["name", ["Name is an invalid UUID"]]]);
+		const expectedException = new IllegalFileStreamException(expectedValidationErrors);
+
+		try {
+			expect.assertions(1);
+			validator.validate(inputFileStream);
+		} catch (error) {
+			expect(error).toBeSameException(expectedException);
+		}
+	});
+
+	// test("When validating an illegal extension it should throw an illegal file stream exception", () => {
+	// 	const fileName = `${uuid}.bmp`;
+	// 	const inputStream = Readable.from("");
+	// 	const inputFileStream = new FileStream(fileName, inputStream);
+	// 	const expectedValidationErrors = new Map([
+	// 		["extension", ["Image extension must be a .png, .jpg, or .jpeg"]],
+	// 	]);
+	// 	const expectedException = new IllegalFileStreamException(expectedValidationErrors);
+
+	// 	try {
+	// 		expect.assertions(1);
+	// 		validator.validate(inputFileStream);
+	// 	} catch (error) {
+	// 		expect(error).toBeSameException(expectedException);
+	// 	}
+	// });
+});
