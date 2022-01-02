@@ -30,4 +30,19 @@ describe("Image Extractor File Stream Validator", () => {
 			validator.validate(inputFileStream);
 		}).toBeSameException(expectedException);
 	});
+
+	test("When validating a file stream that has been destroyed it should throw an exception", () => {
+		const fileName = `${uuid}.png`;
+		const inputStream = Readable.from("content");
+		inputStream.destroy();
+		const inputFileStream = new FileStream(fileName, inputStream);
+		const expectedValidationErrors = new Map([
+			["content", ["Content stream must not be closed"]],
+		]);
+		const expectedException = new IllegalFileStreamException(expectedValidationErrors);
+
+		expect(() => {
+			validator.validate(inputFileStream);
+		}).toBeSameException(expectedException);
+	});
 });

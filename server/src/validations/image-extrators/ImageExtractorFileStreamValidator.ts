@@ -16,6 +16,7 @@ export default class ImageExtractorFileStreamValidator extends Validator<FileStr
 			exception,
 			this.validateName(stream),
 			this.validateExtension(stream),
+			...this.validateContent(stream),
 		);
 		exception.throwIfContainsErrors();
 	}
@@ -37,5 +38,13 @@ export default class ImageExtractorFileStreamValidator extends Validator<FileStr
 			!this.legalExtensions.includes(stream.extension),
 			"Image extension must be a .jpg, .jpeg, or .png",
 		);
+	}
+
+	private validateContent(stream: FileStream): IValidation[] {
+		return [new Validation("content", this.ensureStreamHasNotBeenRead(stream))];
+	}
+
+	private ensureStreamHasNotBeenRead(stream: FileStream): IValidationResult {
+		return new ValidationResult(!stream.content.readable, "Content stream must not be closed");
 	}
 }
