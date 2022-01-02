@@ -5,36 +5,29 @@ import ImageExtractorFileStreamValidator from "../../../src/validations/image-ex
 
 describe("Image Extractor File Stream Validator", () => {
 	const validator = new ImageExtractorFileStreamValidator();
-	// const uuid = "b82dbf17-9eee-47f7-8858-bb4fe54c50a8";
+	const uuid = "b82dbf17-9eee-47f7-8858-bb4fe54c50a8";
 
 	test("When validating an illegal file name it should throw an illegal file stream exception", () => {
 		const inputStream = Readable.from("");
 		const inputFileStream = new FileStream("image.png", inputStream);
 		const expectedValidationErrors = new Map([["name", ["Name is an invalid UUID"]]]);
 		const expectedException = new IllegalFileStreamException(expectedValidationErrors);
-
-		try {
-			expect.assertions(1);
+		expect(() => {
 			validator.validate(inputFileStream);
-		} catch (error) {
-			expect(error).toBeSameException(expectedException);
-		}
+		}).toBeSameException(expectedException);
 	});
 
-	// test("When validating an illegal extension it should throw an illegal file stream exception", () => {
-	// 	const fileName = `${uuid}.bmp`;
-	// 	const inputStream = Readable.from("");
-	// 	const inputFileStream = new FileStream(fileName, inputStream);
-	// 	const expectedValidationErrors = new Map([
-	// 		["extension", ["Image extension must be a .png, .jpg, or .jpeg"]],
-	// 	]);
-	// 	const expectedException = new IllegalFileStreamException(expectedValidationErrors);
+	test("When validating an illegal extension it should throw an illegal file stream exception", () => {
+		const fileName = `${uuid}.bmp`;
+		const inputStream = Readable.from("");
+		const inputFileStream = new FileStream(fileName, inputStream);
+		const expectedValidationErrors = new Map([
+			["extension", ["Image extension must be a .jpg, .jpeg, or .png"]],
+		]);
+		const expectedException = new IllegalFileStreamException(expectedValidationErrors);
 
-	// 	try {
-	// 		expect.assertions(1);
-	// 		validator.validate(inputFileStream);
-	// 	} catch (error) {
-	// 		expect(error).toBeSameException(expectedException);
-	// 	}
-	// });
+		expect(() => {
+			validator.validate(inputFileStream);
+		}).toBeSameException(expectedException);
+	});
 });

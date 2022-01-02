@@ -1,6 +1,6 @@
 import sharp from "sharp";
 import { Readable } from "stream";
-import { instance, mock, reset, when } from "ts-mockito";
+import { instance, mock, reset, verify, when } from "ts-mockito";
 import SharpImageExtractor from "../../../src/brokers/image-extractors/SharpImageExtractorBroker";
 import ImageExtractorFoundationService from "../../../src/foundations/image-extractors/ImageExtractorFoundationService";
 import Exception from "../../../src/models/common/exceptions/Exception";
@@ -41,6 +41,7 @@ describe("Image Extractor Foundation Service Suite", () => {
 		const actualFileStream = await service.extract(inputImageStream, boundingBox);
 
 		expect(actualFileStream).toEqual(expectedFileStream);
+		verify(mockedImageExtractorBroker.extract(inputImageStream, boundingBox)).once();
 	});
 
 	test("When extracting an image and the broker fails it should throw a dependency exception", async () => {
@@ -56,12 +57,10 @@ describe("Image Extractor Foundation Service Suite", () => {
 		const imageExtractorBroker = instance(mockedImageExtractorBroker);
 		const service = new ImageExtractorFoundationService(imageExtractorBroker);
 
-		try {
-			expect.assertions(1);
-			await service.extract(inputImageStream, boundingBox);
-		} catch (error) {
-			expect(error).toEqual(expectedException);
-		}
+		const extractionPromise = service.extract(inputImageStream, boundingBox);
+
+		await expect(extractionPromise).rejects.toBeSameException(expectedException);
+		verify(mockedImageExtractorBroker.extract(inputImageStream, boundingBox)).once();
 	});
 
 	test("When extracting from a non readable image input stream it should throw a dependency exception", async () => {
@@ -77,12 +76,10 @@ describe("Image Extractor Foundation Service Suite", () => {
 		const imageExtractorBroker = instance(mockedImageExtractorBroker);
 		const service = new ImageExtractorFoundationService(imageExtractorBroker);
 
-		try {
-			expect.assertions(1);
-			await service.extract(inputImageStream, boundingBox);
-		} catch (error) {
-			expect(error).toEqual(expectedException);
-		}
+		const extractionPromise = service.extract(inputImageStream, boundingBox);
+
+		await expect(extractionPromise).rejects.toBeSameException(expectedException);
+		verify(mockedImageExtractorBroker.extract(inputImageStream, boundingBox)).never();
 	});
 
 	test("When extracted stream has problem it should throw a dependency validation exception", async () => {
@@ -103,11 +100,9 @@ describe("Image Extractor Foundation Service Suite", () => {
 		const imageExtractorBroker = instance(mockedImageExtractorBroker);
 		const service = new ImageExtractorFoundationService(imageExtractorBroker);
 
-		try {
-			expect.assertions(1);
-			await service.extract(inputImageStream, boundingBox);
-		} catch (error) {
-			expect(error).toEqual(expectedException);
-		}
+		const extractionPromise = service.extract(inputImageStream, boundingBox);
+
+		await expect(extractionPromise).rejects.toBeSameException(expectedException);
+		verify(mockedImageExtractorBroker.extract(inputImageStream, boundingBox)).once();
 	});
 });

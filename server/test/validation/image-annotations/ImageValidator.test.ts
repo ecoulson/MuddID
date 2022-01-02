@@ -11,10 +11,11 @@ describe("Image Validator Suite", () => {
 		const expectedErrorData = new Map([
 			["content", ["File content can not be an empty buffer"]],
 		]);
+		const expectedException = new IllegalBufferedAnnotationImage(expectedErrorData);
 
 		expect(() => {
 			validator.validate(file);
-		}).toThrowError(new IllegalBufferedAnnotationImage(expectedErrorData));
+		}).toBeSameException(expectedException);
 	});
 
 	test("When given an file with an illegal extension it should throw", () => {
@@ -23,19 +24,21 @@ describe("Image Validator Suite", () => {
 		const expectedErrorData = new Map([
 			["extension", ["Extension must be one of the following types: .jpg, .jpeg, .png"]],
 		]);
+		const expectedException = new IllegalBufferedAnnotationImage(expectedErrorData);
 
 		expect(() => {
 			validator.validate(file);
-		}).toThrowError(new IllegalBufferedAnnotationImage(expectedErrorData));
+		}).toThrowError(expectedException);
 	});
 
 	test("When given a file with an invalid uuid in its name it should throw", () => {
 		const content = Buffer.from("content");
 		const file = new BufferedFile("file.png", content);
 		const expectedErrorData = new Map([["name", ["Name must be a valid UUID"]]]);
+		const expectedException = new IllegalBufferedAnnotationImage(expectedErrorData);
 
 		expect(() => {
 			validator.validate(file);
-		}).toThrowError(new IllegalBufferedAnnotationImage(expectedErrorData));
+		}).toThrowError(expectedException);
 	});
 });

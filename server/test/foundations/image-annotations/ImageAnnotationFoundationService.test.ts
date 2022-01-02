@@ -52,13 +52,10 @@ describe("Image Annotation Foundation Service Tests", () => {
 			annotationBroker,
 		);
 
-		try {
-			expect.assertions(1);
-			await imageAnnotationFoundationService.annotateImage(file);
-		} catch (error) {
-			expect(error).toEqual(expectedException);
-			verify(mockedAnnotationBroker.annotateImage(file)).never();
-		}
+		const annotationPromise = imageAnnotationFoundationService.annotateImage(file);
+
+		await expect(annotationPromise).rejects.toBeSameException(expectedException);
+		verify(mockedAnnotationBroker.annotateImage(file)).never();
 	});
 
 	test("Should throw a dependency exception when the broker throws", async () => {
@@ -72,13 +69,10 @@ describe("Image Annotation Foundation Service Tests", () => {
 			annotationBroker,
 		);
 
-		try {
-			expect.assertions(1);
-			await imageAnnotationFoundationService.annotateImage(file);
-		} catch (error) {
-			expect(error).toEqual(expectedException);
-			verify(mockedAnnotationBroker.annotateImage(file)).once();
-		}
+		const annotationPromise = imageAnnotationFoundationService.annotateImage(file);
+
+		await expect(annotationPromise).rejects.toBeSameException(expectedException);
+		verify(mockedAnnotationBroker.annotateImage(file)).once();
 	});
 
 	test("Should throw a dependency validation exception when response is undefined", async () => {
@@ -94,12 +88,9 @@ describe("Image Annotation Foundation Service Tests", () => {
 			annotationBroker,
 		);
 
-		expect.assertions(1);
-		try {
-			await imageAnnotationFoundationService.annotateImage(file);
-		} catch (error) {
-			expect(error).toEqual(expectedException);
-			verify(mockedAnnotationBroker.annotateImage(file)).once();
-		}
+		const annotationPromise = imageAnnotationFoundationService.annotateImage(file);
+
+		await expect(annotationPromise).rejects.toBeSameException(expectedException);
+		verify(mockedAnnotationBroker.annotateImage(file)).once();
 	});
 });

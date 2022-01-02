@@ -8,16 +8,13 @@ describe("Google Cloud Annotation Response Validator Suite", () => {
 	test("Should throw an exception when the response is undefined or null", () => {
 		const expectedError = new NullImageAnnotationResponseException();
 
-		expect.assertions(1);
-		try {
+		expect(() => {
 			validator.validate(null);
-		} catch (error) {
-			expect(error).toEqual(expectedError);
-		}
+		}).toBeSameException(expectedError);
 	});
 
 	test("Should throw an exception when the response has no annotations", () => {
-		const expectedError = new IllegalGoogleCloudAnnotationResponseException(
+		const expectedException = new IllegalGoogleCloudAnnotationResponseException(
 			new Map([
 				["faceAnnotations", ["Must exist on the response body"]],
 				["logoAnnotations", ["Must exist on the response body"]],
@@ -25,16 +22,13 @@ describe("Google Cloud Annotation Response Validator Suite", () => {
 			]),
 		);
 
-		expect.assertions(1);
-		try {
+		expect(() => {
 			validator.validate({});
-		} catch (error) {
-			expect(error.data).toEqual(expectedError.data);
-		}
+		}).toBeSameException(expectedException);
 	});
 
 	test("Should throw an exception when the annotation has no bounding poly", () => {
-		const expectedError = new IllegalGoogleCloudAnnotationResponseException(
+		const expectedException = new IllegalGoogleCloudAnnotationResponseException(
 			new Map([
 				["faceAnnotations[0].boundingPoly", ["Must exist on the annotation"]],
 				["logoAnnotations[0].boundingPoly", ["Must exist on the annotation"]],
@@ -42,19 +36,16 @@ describe("Google Cloud Annotation Response Validator Suite", () => {
 			]),
 		);
 
-		expect.assertions(1);
-		try {
+		expect(() => {
 			validator.validate({
 				faceAnnotations: [{}],
 				logoAnnotations: [{}],
 			});
-		} catch (error) {
-			expect(error.data).toEqual(expectedError.data);
-		}
+		}).toBeSameException(expectedException);
 	});
 
 	test("Should throw an exception when the text annotation has no description", () => {
-		const expectedError = new IllegalGoogleCloudAnnotationResponseException(
+		const expectedException = new IllegalGoogleCloudAnnotationResponseException(
 			new Map([
 				["faceAnnotations[0].boundingPoly", ["Must exist on the annotation"]],
 				["logoAnnotations[0].boundingPoly", ["Must exist on the annotation"]],
@@ -62,20 +53,17 @@ describe("Google Cloud Annotation Response Validator Suite", () => {
 			]),
 		);
 
-		expect.assertions(1);
-		try {
+		expect(() => {
 			validator.validate({
 				faceAnnotations: [{}],
 				logoAnnotations: [{}],
 				textAnnotations: [{}],
 			});
-		} catch (error) {
-			expect(error.data).toEqual(expectedError.data);
-		}
+		}).toBeSameException(expectedException);
 	});
 
 	test("Should throw an exception when the annotations have no vertices", () => {
-		const expectedError = new IllegalGoogleCloudAnnotationResponseException(
+		const expectedException = new IllegalGoogleCloudAnnotationResponseException(
 			new Map([
 				[
 					"faceAnnotations[0].boundingPoly.vertices",
@@ -89,8 +77,7 @@ describe("Google Cloud Annotation Response Validator Suite", () => {
 			]),
 		);
 
-		expect.assertions(1);
-		try {
+		expect(() => {
 			validator.validate({
 				faceAnnotations: [
 					{
@@ -104,13 +91,11 @@ describe("Google Cloud Annotation Response Validator Suite", () => {
 				],
 				textAnnotations: [{}],
 			});
-		} catch (error) {
-			expect(error.data).toEqual(expectedError.data);
-		}
+		}).toBeSameException(expectedException);
 	});
 
 	test("Should throw an exception when there exist illegal vertices", () => {
-		const expectedError = new IllegalGoogleCloudAnnotationResponseException(
+		const expectedException = new IllegalGoogleCloudAnnotationResponseException(
 			new Map([
 				[
 					"faceAnnotations[0].boundingPoly.vertices[0]",
@@ -124,8 +109,7 @@ describe("Google Cloud Annotation Response Validator Suite", () => {
 			]),
 		);
 
-		expect.assertions(1);
-		try {
+		expect(() => {
 			validator.validate({
 				faceAnnotations: [
 					{
@@ -151,8 +135,6 @@ describe("Google Cloud Annotation Response Validator Suite", () => {
 				],
 				textAnnotations: [{}],
 			});
-		} catch (error) {
-			expect(error.data).toEqual(expectedError.data);
-		}
+		}).toBeSameException(expectedException);
 	});
 });

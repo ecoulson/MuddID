@@ -6,10 +6,22 @@ type Errorish = Exception | Error | undefined | null;
 
 expect.extend({
 	toBeSameException(received, expected) {
-		if (!isException(received)) {
+		let receivedException = received;
+		if (typeof received === "function") {
+			try {
+				received();
+				return {
+					pass: false,
+					message: () => `expected function to throw an exception`,
+				};
+			} catch (error) {
+				receivedException = error;
+			}
+		}
+		if (!isException(receivedException)) {
 			return {
 				pass: false,
-				message: () => `expected ${received} to be an instance of an Exception`,
+				message: () => `expected ${receivedException} to be an instance of an Exception`,
 			};
 		}
 		if (!isException(expected)) {
@@ -18,8 +30,8 @@ expect.extend({
 				message: () => `${expected} must be an instance of an Exception`,
 			};
 		}
-		const pass = isSameException(received, expected);
-		const serializedReceived = received.serialize();
+		const pass = isSameException(receivedException, expected);
+		const serializedReceived = receivedException.serialize();
 		const serializedExpected = expected.serialize();
 
 		if (!pass) {

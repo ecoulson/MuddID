@@ -39,22 +39,17 @@ describe("Exception Suite", () => {
 		);
 		const expectedException = exception;
 
-		try {
-			expect.assertions(1);
+		expect(() => {
 			exception.throwIfContainsErrors();
-		} catch (error) {
-			expect(error).toEqual(expectedException);
-		}
+		}).toBeSameException(expectedException);
 	});
 
 	test("When there are no errors on the exception it should not throw", () => {
 		const exception = new Exception();
 
-		try {
+		expect(() => {
 			exception.throwIfContainsErrors();
-		} catch (error) {
-			fail("Should not throw an exception");
-		}
+		}).not.toThrow();
 	});
 
 	test("When adding data to the exception it should add the data", () => {
