@@ -1,4 +1,4 @@
-import Exception from "../../models/common/exceptions/Exception";
+import Exception from "../../../src/models/common/exceptions/Exception";
 
 declare global {
 	namespace jest {
