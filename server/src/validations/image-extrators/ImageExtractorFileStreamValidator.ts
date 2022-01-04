@@ -41,10 +41,20 @@ export default class ImageExtractorFileStreamValidator extends Validator<FileStr
 	}
 
 	private validateContent(stream: FileStream): IValidation[] {
-		return [new Validation("content", this.ensureStreamHasNotBeenRead(stream))];
+		return [
+			new Validation("content", this.ensureStreamIsReadable(stream)),
+			new Validation("content", this.ensureStreamHasNotBeenRead(stream)),
+		];
+	}
+
+	private ensureStreamIsReadable(stream: FileStream): IValidationResult {
+		return new ValidationResult(!stream.content.readable, "Content stream must not be closed");
 	}
 
 	private ensureStreamHasNotBeenRead(stream: FileStream): IValidationResult {
-		return new ValidationResult(!stream.content.readable, "Content stream must not be closed");
+		return new ValidationResult(
+			stream.content.readableDidRead,
+			"Content stream must not have emitted a data event or been read",
+		);
 	}
 }

@@ -15,7 +15,6 @@ export class InfrastructureCdkStack extends cdk.Stack {
 				bucketName: "mudd-id-verification-images",
 				blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
 				accessControl: s3.BucketAccessControl.PRIVATE,
-				encryption: s3.BucketEncryption.KMS,
 			}
 		);
 

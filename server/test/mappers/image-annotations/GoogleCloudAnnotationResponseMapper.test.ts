@@ -1,4 +1,3 @@
-import { google } from "@google-cloud/vision/build/protos/protos";
 import GoogleCloudAnnotationResponseMapper from "../../../src/mappers/image-annotations/GoogleCloudAnnotationResponseMapper";
 import BufferedFile from "../../../src/models/common/files/BufferedFile";
 import AnnotatedImage from "../../../src/models/image-annotations/AnnotatedImage";
@@ -8,8 +7,7 @@ import {
 	createExpectedAnnotatedImageFromResponse,
 	createFakeGoogleCloudAnnotationResponse,
 } from "../../fakes/FakeGoogleCloudAnnotationResponse";
-
-type GoogleCloudAnnotationResponse = google.cloud.vision.v1.IAnnotateImageResponse;
+import { GoogleCloudAnnotationResponse } from "../../../src/types/GoogleCloudTypes";
 
 describe("Google Cloud Annotation Response Mapper Suite", () => {
 	const mapper = new GoogleCloudAnnotationResponseMapper();
