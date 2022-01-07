@@ -1,5 +1,5 @@
 import BufferedFile from "../../../src/models/common/files/BufferedFile";
-import IllegalBufferedAnnotationImage from "../../../src/models/image-annotations/exceptions/IllegalBufferedAnnotationImage";
+import IllegalFileException from "../../../src/models/common/files/exceptions/IllegalFileException";
 import ImageValidator from "../../../src/validations/image-annotations/ImageValidator";
 
 describe("Image Validator Suite", () => {
@@ -11,7 +11,7 @@ describe("Image Validator Suite", () => {
 		const expectedErrorData = new Map([
 			["content", ["File content can not be an empty buffer"]],
 		]);
-		const expectedException = new IllegalBufferedAnnotationImage(expectedErrorData);
+		const expectedException = new IllegalFileException(expectedErrorData);
 
 		expect(() => {
 			validator.validate(file);
@@ -24,7 +24,7 @@ describe("Image Validator Suite", () => {
 		const expectedErrorData = new Map([
 			["extension", ["Extension must be one of the following types: .jpg, .jpeg, .png"]],
 		]);
-		const expectedException = new IllegalBufferedAnnotationImage(expectedErrorData);
+		const expectedException = new IllegalFileException(expectedErrorData);
 
 		expect(() => {
 			validator.validate(file);
@@ -35,7 +35,7 @@ describe("Image Validator Suite", () => {
 		const content = Buffer.from("content");
 		const file = new BufferedFile("file.png", content);
 		const expectedErrorData = new Map([["name", ["Name must be a valid UUID"]]]);
-		const expectedException = new IllegalBufferedAnnotationImage(expectedErrorData);
+		const expectedException = new IllegalFileException(expectedErrorData);
 
 		expect(() => {
 			validator.validate(file);

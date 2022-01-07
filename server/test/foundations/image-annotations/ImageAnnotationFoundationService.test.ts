@@ -10,8 +10,8 @@ import ImageAnnotationValidationException from "../../../src/models/image-annota
 import ImageAnnotationDependencyException from "../../../src/models/image-annotations/exceptions/ImageAnnotationDependencyException";
 import ImageAnnotationDependencyValidationException from "../../../src/models/image-annotations/exceptions/ImageAnnotationDependencyValidationException";
 import NullImageAnnotationResponseException from "../../../src/models/image-annotations/exceptions/NullImageAnnotationResponseException";
-import IllegalBufferedAnnotationImage from "../../../src/models/image-annotations/exceptions/IllegalBufferedAnnotationImage";
 import BufferedFile from "../../../src/models/common/files/BufferedFile";
+import IllegalFileException from "../../../src/models/common/files/exceptions/IllegalFileException";
 
 describe("Image Annotation Foundation Service Tests", () => {
 	const mockedAnnotationBroker = mock(GoogleCloudImageAnnotationBroker);
@@ -45,7 +45,7 @@ describe("Image Annotation Foundation Service Tests", () => {
 			["content", ["File content can not be an empty buffer"]],
 		]);
 		const expectedException = new ImageAnnotationValidationException(
-			new IllegalBufferedAnnotationImage(expectedErrorData),
+			new IllegalFileException(expectedErrorData),
 		);
 		const annotationBroker = instance(mockedAnnotationBroker);
 		const imageAnnotationFoundationService = new ImageAnnotationFoundationService(
