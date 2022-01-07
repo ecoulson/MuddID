@@ -1,18 +1,21 @@
 import { Readable } from "stream";
 import SharpImageExtractor from "../../brokers/image-extractors/SharpImageExtractorBroker";
+import IllegalFileException from "../../models/common/files/exceptions/IllegalFileException";
 import FileStream from "../../models/common/files/FileStream";
 import IBoundingBox from "../../models/common/geometry/IBoundingBox";
-import IllegalFileStreamException from "../../models/image-extractors/exceptions/IllegalFileStreamException";
 import ImageExtractorDependencyException from "../../models/image-extractors/exceptions/ImageExtractorDependencyException";
 import ImageExtractorDependencyValidationException from "../../models/image-extractors/exceptions/ImageExtractorDependencyValidationException";
 import ImageExtractorValidationException from "../../models/image-extractors/exceptions/ImageExtractorValidationException";
+import ImageExtractorFileStreamValidator from "../../validations/image-extrators/ImageExtractorFileStreamValidator";
 import IImageExtractorFoundationService from "./IImageExtractorFoundationService";
 
 export default class ImageExtractorFoundationService implements IImageExtractorFoundationService {
 	private imageExtractorBroker: SharpImageExtractor;
+	private fileStreamValidator: ImageExtractorFileStreamValidator;
 
 	constructor(imageExtractorBroker: SharpImageExtractor) {
 		this.imageExtractorBroker = imageExtractorBroker;
+		this.fileStreamValidator = new ImageExtractorFileStreamValidator();
 	}
 
 	async extract(file: FileStream, boundingBox: IBoundingBox): Promise<FileStream> {
@@ -23,12 +26,10 @@ export default class ImageExtractorFoundationService implements IImageExtractorF
 	}
 
 	private validateInputStream(file: FileStream) {
-		if (!file.content.readable) {
-			throw new ImageExtractorValidationException(
-				new IllegalFileStreamException(
-					new Map([["content", ["Stream must not be closed"]]]),
-				),
-			);
+		try {
+			this.fileStreamValidator.validate(file);
+		} catch (error) {
+			throw new ImageExtractorValidationException(error);
 		}
 	}
 
@@ -43,9 +44,7 @@ export default class ImageExtractorFoundationService implements IImageExtractorF
 	private validateExtractedImageStream(stream: Readable) {
 		if (!stream.readable) {
 			throw new ImageExtractorDependencyValidationException(
-				new IllegalFileStreamException(
-					new Map([["content", ["Stream must not be closed"]]]),
-				),
+				new IllegalFileException(new Map([["content", ["Stream must not be closed"]]])),
 			);
 		}
 	}
