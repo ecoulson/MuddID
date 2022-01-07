@@ -20,9 +20,9 @@ export default class ImageExtractorFoundationService implements IImageExtractorF
 
 	async extract(file: FileStream, boundingBox: IBoundingBox): Promise<FileStream> {
 		this.validateInputStream(file);
-		const extractedReadableStream = await this.extractRegion(file, boundingBox);
-		this.validateExtractedImageStream(extractedReadableStream);
-		return new FileStream(file.baseName(), extractedReadableStream);
+		const extractedFileStream = await this.extractRegion(file, boundingBox);
+		this.validateExtractedImageStream(extractedFileStream);
+		return extractedFileStream;
 	}
 
 	private validateInputStream(file: FileStream) {
@@ -33,19 +33,20 @@ export default class ImageExtractorFoundationService implements IImageExtractorF
 		}
 	}
 
-	private async extractRegion(file: FileStream, boundingBox: IBoundingBox): Promise<Readable> {
+	private async extractRegion(file: FileStream, boundingBox: IBoundingBox): Promise<FileStream> {
 		try {
-			return await this.imageExtractorBroker.extract(file, boundingBox);
+			const contentStream = await this.imageExtractorBroker.extract(file, boundingBox);
+			return new FileStream(file.baseName(), contentStream);
 		} catch (error) {
 			throw new ImageExtractorDependencyException(error);
 		}
 	}
 
-	private validateExtractedImageStream(stream: Readable) {
-		if (!stream.readable) {
-			throw new ImageExtractorDependencyValidationException(
-				new IllegalFileException(new Map([["content", ["Stream must not be closed"]]])),
-			);
+	private validateExtractedImageStream(file: FileStream) {
+		try {
+			return this.fileStreamValidator.validate(file);
+		} catch (error) {
+			throw new ImageExtractorDependencyValidationException(error);
 		}
 	}
 }

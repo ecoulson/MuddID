@@ -14,26 +14,25 @@ import { Readable } from "typeorm/platform/PlatformTools";
 describe("Image Extractor Foundation Service Suite", () => {
 	const fileName = "42875faa-71ac-4de2-b232-fee667d95380.png";
 	const mockedImageExtractorBroker = mock(SharpImageExtractor);
-	const mockedReadable = mock(Readable);
-	const extractedImageBase64 =
-		"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEABAMAAACuXLVVAAAAAXNSR0IArs4c6QAAAA9QTFRF7dDX/6bJAAAA/2ShoCBAI6gI7gAAAMNJREFUeJzt1sENgCAQRUFbsAVbsAX7r8mLXjbZAEYj6Lyj8cMcmSZJkiRJkiRJkqTK5sYAAAAAAAAAvgNovfh2CAAAAAAAAMBrgOzA5aj2+2UIAAAAAAAAwOuANdQKiHsAAAAAAACA8QDxggjJyv4DAAAAAAAAGA+wJp0HZg+TbAcAAAAAAAAwHmALxYtKxT0AAAAAAADAOIA4bIWU9gAAAAAAAAD9A0qQp3YAAAAAAAAA/QEkSZIkSZIkSZIkSdJv2gHRFXrMbNrBvwAAAABJRU5ErkJggg==";
+	const mockedInputReadable = mock(Readable);
+	const mockedOutputReadable = mock(Readable);
 
 	beforeEach(() => {
 		reset(mockedImageExtractorBroker);
-		reset(mockedReadable);
+		reset(mockedInputReadable);
 	});
 
-	test("Should extract region from image", async () => {
-		when(mockedReadable.readable).thenReturn(true);
-		const inputImage = instance(mockedReadable);
+	test("When extracting an image and it succeeds it should return a file stream", async () => {
+		when(mockedInputReadable.readable).thenReturn(true);
+		when(mockedOutputReadable.readable).thenReturn(true);
+		const inputImage = instance(mockedInputReadable);
+		const expectedImage = instance(mockedOutputReadable);
 		const inputImageStream = new FileStream(fileName, inputImage);
 		const boundingBox = new BoundingBox(0, 0, 64, 64);
-		const extractedImage = Buffer.from(extractedImageBase64);
-		const expectedSharpObject = sharp(extractedImage);
-		const expectedFileStream = new FileStream(fileName, expectedSharpObject);
+		const expectedFileStream = new FileStream(fileName, expectedImage);
 
 		when(mockedImageExtractorBroker.extract(inputImageStream, boundingBox)).thenResolve(
-			expectedSharpObject,
+			expectedImage,
 		);
 		const imageExtractorBroker = instance(mockedImageExtractorBroker);
 		const service = new ImageExtractorFoundationService(imageExtractorBroker);
@@ -45,8 +44,8 @@ describe("Image Extractor Foundation Service Suite", () => {
 	});
 
 	test("When extracting an image and the broker fails it should throw a dependency exception", async () => {
-		when(mockedReadable.readable).thenReturn(true);
-		const inputImage = instance(mockedReadable);
+		when(mockedInputReadable.readable).thenReturn(true);
+		const inputImage = instance(mockedInputReadable);
 		const inputImageStream = new FileStream(fileName, inputImage);
 		const boundingBox = new BoundingBox(0, 0, 64, 64);
 		const innerException = new Exception(Exception.name, "Extraction failed");
@@ -65,8 +64,8 @@ describe("Image Extractor Foundation Service Suite", () => {
 	});
 
 	test("When extracting from a non readable image input stream it should throw a dependency exception", async () => {
-		when(mockedReadable.readable).thenReturn(false);
-		const inputImage = instance(mockedReadable);
+		when(mockedInputReadable.readable).thenReturn(false);
+		const inputImage = instance(mockedInputReadable);
 		const inputImageStream = new FileStream(fileName, inputImage);
 		const boundingBox = new BoundingBox(0, 0, 64, 64);
 		const innerException = new IllegalFileException(
@@ -84,20 +83,19 @@ describe("Image Extractor Foundation Service Suite", () => {
 	});
 
 	test("When extracted stream has problem it should throw a dependency validation exception", async () => {
-		when(mockedReadable.readable).thenReturn(true);
-		const inputImage = instance(mockedReadable);
+		when(mockedInputReadable.readable).thenReturn(true);
+		when(mockedOutputReadable.readable).thenReturn(false);
+		const inputImage = instance(mockedInputReadable);
+		const expectedImage = instance(mockedOutputReadable);
 		const inputImageStream = new FileStream(fileName, inputImage);
 		const boundingBox = new BoundingBox(0, 0, 64, 64);
 		const innerException = new IllegalFileException(
-			new Map([["content", ["Stream must not be closed"]]]),
+			new Map([["content", ["Content stream must not be closed"]]]),
 		);
 		const expectedException = new ImageExtractorDependencyValidationException(innerException);
-		const extractedImage = Buffer.from(extractedImageBase64);
-		const expectedSharpObject = sharp(extractedImage);
-		expectedSharpObject.destroy();
 
 		when(mockedImageExtractorBroker.extract(inputImageStream, boundingBox)).thenResolve(
-			expectedSharpObject,
+			expectedImage,
 		);
 		const imageExtractorBroker = instance(mockedImageExtractorBroker);
 		const service = new ImageExtractorFoundationService(imageExtractorBroker);
