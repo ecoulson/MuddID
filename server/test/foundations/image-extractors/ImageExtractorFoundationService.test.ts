@@ -1,4 +1,3 @@
-import sharp from "sharp";
 import { instance, mock, reset, verify, when } from "ts-mockito";
 import SharpImageExtractor from "../../../src/brokers/image-extractors/SharpImageExtractorBroker";
 import ImageExtractorFoundationService from "../../../src/foundations/image-extractors/ImageExtractorFoundationService";
